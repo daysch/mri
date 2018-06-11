@@ -22,7 +22,7 @@ function varargout = Radial_Reconstruction_App(varargin)
 
 % Edit the above text to modify the response to help Radial_Reconstruction_App
 
-% Last Modified by GUIDE v2.5 11-Jun-2018 11:56:52
+% Last Modified by GUIDE v2.5 11-Jun-2018 16:26:18
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -83,6 +83,24 @@ function run_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 handles.firstpt_val = str2double(get(handles.firstpt, 'String'));
 handles.prepts_val = str2double(get(handles.prepts, 'String'));
+handles.recon_matrix_size_val = str2double(get(handles.recon_matrix_size, 'String'));
+
+% make sure all values properly filled out
+if isnan(handles.firstpt_val) || isnan(handles.prepts_val) || isnan(handles.recon_matrix_size_val)
+han    errordlg('Please fill out parameters');
+    return;
+elseif ~isfield(handles, 'data_path') || isa(handles.data_path, 'double')
+    errordlg('Please select file');
+    return;
+end
+
+% check optional field number of points to be used
+if ~isempty(get(handles.numpts, 'String'))
+    handles.numpts_val = str2double(get(handles.numpts, 'String'));
+elseif isfield(handles, 'numpts_val')
+    handles = rmfield(handles, 'numpts_val');
+end
+
 guidata(hObject, handles);   % Store handles
 radial_recon_rs2d_20180314_two_grads(handles);
 
@@ -132,3 +150,72 @@ function firstpt_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
+
+
+% --- Executes on button press in close_all.
+function close_all_Callback(hObject, eventdata, handles)
+% hObject    handle to close_all (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+set(handles.figure1, 'HandleVisibility', 'off');
+answer = questdlg('Close all figures?','Confirm Closing','Confirm','Cancel', 'Cancel');
+switch answer 
+    case 'Confirm'
+        close all;
+end
+set(handles.figure1, 'HandleVisibility', 'on');
+
+
+
+function numpts_Callback(hObject, eventdata, handles)
+% hObject    handle to numpts (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of numpts as text
+%        str2double(get(hObject,'String')) returns contents of numpts as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function numpts_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to numpts (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+function recon_matrix_size_Callback(hObject, eventdata, handles)
+% hObject    handle to recon_matrix_size (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of recon_matrix_size as text
+%        str2double(get(hObject,'String')) returns contents of recon_matrix_size as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function recon_matrix_size_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to recon_matrix_size (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in choose_file.
+function choose_file_Callback(hObject, eventdata, handles)
+% hObject    handle to choose_file (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+    handles.data_path = uigetdir('../');
+    guidata(hObject, handles);   % Store handles

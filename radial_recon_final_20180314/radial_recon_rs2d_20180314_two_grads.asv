@@ -8,11 +8,13 @@ function radial_recon_rs2d_20180314_two_grads(handles)
 
     % close all % closes all open figures
     disp('Importing data .... ')
-    set(handles.update, 'String', );
+    if nargin == 1    % to GUI
+        set(handles.update, 'String', 'Importing data .... ');
+    end
     tic; % begins a timer for data loading
 
-    % Choose file
-    data_path = uigetdir;
+    % Choose file, if called from command line
+    if nargin =data_path = uigetdir('../');
     % data_path = 'C:\Users\rs2d\Spinlab Data\Workspace\zte_mhd\zte_20180320\Data'; % this is the path where the data is stored when developing code in Sequence Development
 
     [data_raw, params] = openrs2d(data_path);
@@ -38,6 +40,9 @@ function radial_recon_rs2d_20180314_two_grads(handles)
     y_grad(1:end) = grads((DS+1):end,2); % parses the gradient variable 
     z_grad(1:end) = grads((DS+1):end,3); % parses the gradient variable 
     toc; % displays data loading time
+    if nargin == 1
+        update_gui_time(handles); % sends loading time to gui
+    end
     %% plots the first line of data and allows the user (if called from command line) to choose the zero of k-space and the number of points lost in the deadtime
 
     figure(1); 
@@ -70,11 +75,17 @@ function radial_recon_rs2d_20180314_two_grads(handles)
 
     npts = size(data_grads_undead,2); % Uses all the points acquired except those at the beginning.
 
-    %% to use a specified number of points implement the following code :
-
+    % if number of points specified in gui, uses that
+    if nargin == 1 && isfield(handles, 'numpts_val')
+        numpts = handles.numpts_val; 
+        data_grads_undead = data_grads_undead(:,1:deadpts+numpts);
+        npts = size(data_grads_undead,2);
+    %% For command line, to use a specified number of points implement the following code :
+    % else
     % numpts = input('number of points to be used: '); 
     % data_grads_undead = data_grads_undead(:,1:deadpts+numpts);
     % npts = size(data_grads_undead,2);
+    end
 
     %% plots all the data by index number
     data_grads = data_grads_undead; % creates variable to be used in next step
@@ -82,7 +93,7 @@ function radial_recon_rs2d_20180314_two_grads(handles)
     figure(31)
     pcolor(abs(data_grads(1:5:end,:))); shading flat
 
-    clear data data_raw grads data_grads_undead %deletes bulky, repetative data;
+    clear data data_raw grads data_grads_undead %deletes bulky, repetitive data;
 
 
     %% calculates the gradient amplitudes and number of acquisition in each gradient set
@@ -92,7 +103,11 @@ function radial_recon_rs2d_20180314_two_grads(handles)
     nspokes2 = nspokes-nspokes1;
 
     %% sets the recon size 
-    recon_matrix_size = 2^6; % currently fixed
+    if nargin == 0
+        recon_matrix_size = 2^6; % fixed on command line
+    else
+        recon_matrix_size = handles.recon_matrix_size_val;
+    end
     nsample = npts; 
     nmeas = nspokes;
     %% Step 1. Filtering 
@@ -228,4 +243,12 @@ function radial_recon_rs2d_20180314_two_grads(handles)
         figure(1200+n); pcolor(squeeze(abs(recon_final(n,:,:)))); shading flat; colormap('gray'); title(['sagittal slice ' num2str(n)]); caxis(coloraxis)
     end
 end
+
+% prints the time elapsed to the gui
+function update_gui_time(handles)
+    old_update = get(handles.update, 'String');
+    set(handles.update, 'String', [old_update newline 'Elapsed time is ' num2str(toc) ' seconds']);
+    drawnow;
+end
+    
 
