@@ -206,6 +206,7 @@ function radial_recon_rs2d_20180314_two_grads(handles)
     tic
     senscor = senscor_gen_20180314(recon_matrix_size, nsample, nspokes1, filter, filter2, x_grad, y_grad, z_grad);
     %{
+    %% unvectorized code:
     k_final = zeros(recon_matrix_size,recon_matrix_size,recon_matrix_size);
     for n = 1:recon_matrix_size
         for m = 1:recon_matrix_size
@@ -219,6 +220,7 @@ function radial_recon_rs2d_20180314_two_grads(handles)
         end
     end
     %}
+    % should do the same as the above code, in about 2/3 the time
     k_final = k_blurred ./ senscor;
     k_final(senscor == 0) = 0;
     toc
