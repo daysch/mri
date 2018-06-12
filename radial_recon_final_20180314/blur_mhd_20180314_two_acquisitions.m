@@ -52,9 +52,9 @@ for n = 1:nmeas
     end
     
     % The rest is primarily just the Chesler code.
-    for m = 1:nsample;
+    for m = 1:nsample
         data=data_in(n,m);
-        if data~=0 % saves time by not processing zeros
+        if data~=0 % saves time by not processing zeros (confirmed via testing)
             kxl = find(x_k_rect<=proj_x(m), 1, 'last');
             kxu = kxl + 1;
             if kxu>recon_matrix_size; kxu = 1; end
@@ -96,7 +96,6 @@ for n = 1:nmeas
             k_phantom_blurred_re(kxu,kyu,kzu)=k_phantom_blurred_re(kxu,kyu,kzu)+real(dx*tmp*data);
             k_phantom_blurred_im(kxl,kyu,kzu)=k_phantom_blurred_im(kxl,kyu,kzu)+imag(cx*tmp*data);
             k_phantom_blurred_im(kxu,kyu,kzu)=k_phantom_blurred_im(kxu,kyu,kzu)+imag(dx*tmp*data);
-        else
         end
     end
     

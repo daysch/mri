@@ -114,7 +114,7 @@ function radial_recon_rs2d_20180314_two_grads(handles)
     if nargin == 0
         recon_matrix_size = 2^6; % fixed on command line
     else
-        recon_matrix_size = handles.recon_matrix_size_val; % can be edited in gui
+        recon_matrix_size = handles.recon_matrix_size_val; % size can be edited in gui
     end
     nsample = npts; 
     nmeas = nspokes;
@@ -205,7 +205,7 @@ function radial_recon_rs2d_20180314_two_grads(handles)
     end
     tic
     senscor = senscor_gen_20180314(recon_matrix_size, nsample, nspokes1, filter, filter2, x_grad, y_grad, z_grad);
-
+    %{
     k_final = zeros(recon_matrix_size,recon_matrix_size,recon_matrix_size);
     for n = 1:recon_matrix_size
         for m = 1:recon_matrix_size
@@ -218,6 +218,9 @@ function radial_recon_rs2d_20180314_two_grads(handles)
             end
         end
     end
+    %}
+    k_final = k_blurred ./ senscor;
+    k_final(senscor == 0) = 0;
     toc
     if nargin == 1
         update_gui_time(handles); % sends loading time to gui
@@ -244,7 +247,6 @@ function radial_recon_rs2d_20180314_two_grads(handles)
     blur_comp_array = blur_compensation(recon_matrix_size);
 
     recon_final = first_recon./blur_comp_array;
-
     %% Plotting
 
     disp('Plotting results .... ')

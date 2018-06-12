@@ -90,7 +90,7 @@ if isnan(handles.firstpt_val) || isnan(handles.prepts_val) || isnan(handles.reco
     errordlg('Please fill out parameters');
     return;
 elseif ~isfield(handles, 'data_path') || isa(handles.data_path, 'double')
-    errordlg('Please select file');
+    errordlg('Please select folder');
     return;
 end
 
@@ -103,9 +103,13 @@ end
 
 guidata(hObject, handles);   % Store handles
 
-% run reconstruction
-radial_recon_rs2d_20180314_two_grads(handles);
-
+% run reconstruction. inform gui user of errors
+try
+    radial_recon_rs2d_20180314_two_grads(handles);
+catch M
+    errordlg(['Unexpected error in execution of reconstruction:' newline M.message]);
+end
+    
 
 
 function prepts_Callback(hObject, eventdata, handles)
