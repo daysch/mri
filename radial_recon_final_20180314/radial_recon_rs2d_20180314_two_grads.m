@@ -36,9 +36,13 @@ function radial_recon_rs2d_20180314_two_grads(handles)
     x_grad = NaN(nspokes,1);
     y_grad = NaN(nspokes,1);
     z_grad = NaN(nspokes,1);
-
-    grads = csvread([data_path filesep 'gradient_file.txt']); % reads in the gradient file
-
+    try
+        grads = csvread([data_path filesep 'gradient_file.txt']); % reads in the gradient file
+    catch
+        errordlg('Could not load gradient_file.txt');
+        return;
+    end
+        
     x_grad_ramp = grads(10:DS,1); % collect the gradients used in the dummy scans
     x_grad(1:end) = grads((DS+1):end,1); % parses the gradient variable 
     y_grad(1:end) = grads((DS+1):end,2); % parses the gradient variable 
@@ -110,7 +114,7 @@ function radial_recon_rs2d_20180314_two_grads(handles)
     if nargin == 0
         recon_matrix_size = 2^6; % fixed on command line
     else
-        recon_matrix_size = handles.recon_matrix_size_val;
+        recon_matrix_size = handles.recon_matrix_size_val; % can be edited in gui
     end
     nsample = npts; 
     nmeas = nspokes;
@@ -126,6 +130,10 @@ function radial_recon_rs2d_20180314_two_grads(handles)
 
 
     disp('Step 1. Filtering data .... ')
+    if nargin == 1
+        add_string_gui(handles, 'Step 1. Filtering data ....');
+    end
+    
     res = 56/64*npts; % I'm not sure what this does, but it is in the Chesler and Wu codes for the hanning filter
     c = pi/res; % I'm not sure what this does, but it is in the Chesler and Wu codes for the hanning filter
     filter = zeros(1,nsample); % for the main gradient
@@ -174,9 +182,15 @@ function radial_recon_rs2d_20180314_two_grads(handles)
     % C:\Users\rs2d\Documents\MATLAB\radial_recon_final_20180314\senscor
 
     disp('Step 2. Blurring data .... ')
+    if nargin == 1
+        add_string_gui(handles, 'Step 2. Blurring data .... ');
+    end
     tic; % timing
     k_blurred = blur_mhd_20180314_two_acquisitions(recon_matrix_size, nsample, k_filtered, x_grad, y_grad, z_grad);
     toc; % timing
+    if nargin == 1
+        update_gui_time(handles); % sends loading time to gui
+    end
 
     %% Step 3. Sensitivity correction
 
@@ -186,6 +200,9 @@ function radial_recon_rs2d_20180314_two_grads(handles)
     % C:\Users\rs2d\Documents\MATLAB\radial_recon_final_20180314\senscor
 
     disp('Step 3. Sensitivity correction .... ')
+    if nargin == 1
+        add_string_gui(handles, 'Step 3. Sensitivity correction .... ');
+    end
     tic
     senscor = senscor_gen_20180314(recon_matrix_size, nsample, nspokes1, filter, filter2, x_grad, y_grad, z_grad);
 
@@ -202,10 +219,17 @@ function radial_recon_rs2d_20180314_two_grads(handles)
         end
     end
     toc
+    if nargin == 1
+        update_gui_time(handles); % sends loading time to gui
+    end
     %% Step 4. FFT
     % The reconstruction (k-space) lattice is Fourier transformed into a space domain
     % lattice.
     disp('Step 4. Fourier transform .... ')
+    if nargin == 1
+        add_string_gui(handles, 'Step 4. Fourier transform .... ');
+    end
+    
 
     first_recon = fftshift(fftn(fftshift(k_final)));
 
@@ -214,7 +238,9 @@ function radial_recon_rs2d_20180314_two_grads(handles)
     % functions. one for each of the three components of distance from the origin.
 
     disp('Step 5. Applying blur compensation .... ')
-
+    if nargin == 1
+        add_string_gui(handles, 'Step 5. Applying blur compensation ....');
+    end
     blur_comp_array = blur_compensation(recon_matrix_size);
 
     recon_final = first_recon./blur_comp_array;
@@ -222,6 +248,9 @@ function radial_recon_rs2d_20180314_two_grads(handles)
     %% Plotting
 
     disp('Plotting results .... ')
+    if nargin == 1
+        add_string_gui(handles, 'Plotting results .... ');
+    end
 
     figure(101); pcolor(squeeze(abs(recon_final(:,:,recon_matrix_size/2+1)))'); shading flat; colormap('gray'); title('axial slice')
     figure(102); pcolor(squeeze(abs(recon_final(:,recon_matrix_size/2+1,:)))'); shading flat; colormap('gray'); title('coronal slice')
@@ -233,6 +262,9 @@ function radial_recon_rs2d_20180314_two_grads(handles)
     figure(203); pcolor(squeeze(abs(k_final(recon_matrix_size/2+1,:,:)))); shading flat; colormap('gray'); title('sagittal slice k-space')
 
     disp('Done.')
+    if nargin == 1
+        add_string_gui(handles, 'Done. ');
+    end
     %% Optional plotting for more slices.
 
     coloraxis = [0 max(max(max(abs(recon_final))))];
@@ -248,11 +280,26 @@ function radial_recon_rs2d_20180314_two_grads(handles)
     end
 end
 
+% prints a given string to the gui
+function add_string_gui(handles, addition)
+    old_update = get(handles.update, 'String');
+    old_update = mat_to_string(old_update); % handles.update String is stored as multidimensional matrix. Must be converted to string
+    set(handles.update, 'String', sprintf('%s%s', old_update, addition));
+    drawnow;
+end
+
 % prints the time elapsed to the gui
 function update_gui_time(handles)
-    old_update = get(handles.update, 'String');
-    set(handles.update, 'String', [old_update newline 'Elapsed time is ' num2str(toc) ' seconds']);
-    drawnow;
+    add_string_gui(handles, sprintf('Elapsed time is %s seconds', num2str(toc)));
+end
+
+% coverts matrix representation of string to datatype string, preserving newlines
+function str = mat_to_string(mat)
+    mat(:,end + 1) = '\'; mat(:,end + 1) = 'n';
+    mat = mat'; 
+    mat = mat(:);
+    mat = mat';
+    str = compose(mat);
 end
     
 

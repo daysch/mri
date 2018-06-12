@@ -22,7 +22,7 @@ function varargout = Radial_Reconstruction_App(varargin)
 
 % Edit the above text to modify the response to help Radial_Reconstruction_App
 
-% Last Modified by GUIDE v2.5 11-Jun-2018 16:26:18
+% Last Modified by GUIDE v2.5 12-Jun-2018 13:29:42
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -87,7 +87,7 @@ handles.recon_matrix_size_val = str2double(get(handles.recon_matrix_size, 'Strin
 
 % make sure all values properly filled out
 if isnan(handles.firstpt_val) || isnan(handles.prepts_val) || isnan(handles.recon_matrix_size_val)
-han    errordlg('Please fill out parameters');
+    errordlg('Please fill out parameters');
     return;
 elseif ~isfield(handles, 'data_path') || isa(handles.data_path, 'double')
     errordlg('Please select file');
@@ -102,6 +102,8 @@ elseif isfield(handles, 'numpts_val')
 end
 
 guidata(hObject, handles);   % Store handles
+
+% run reconstruction
 radial_recon_rs2d_20180314_two_grads(handles);
 
 
@@ -164,6 +166,7 @@ switch answer
         close all;
 end
 set(handles.figure1, 'HandleVisibility', 'on');
+drawnow;
 
 
 
