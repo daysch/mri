@@ -291,15 +291,15 @@ function radial_recon_rs2d_20180314_two_grads(handles)
             errordlg('log cannot be saved');
             error('log cannot be saved');
         end
-        fprintf(fileid, 'Point at zero,First point,Recon matrix size,Number of points');
+        fprintf(fileid, 'Point at zero,First point of usable data,Recon matrix size,Number of points');
     else
-        fileid = fopen([fileparts(fileparts(mfilename)) filesep 'log.csv'], 'at');
+        fileid = fopen([fileparts(fileparts(mfilename('fullpath'))) filesep 'log.csv'], 'at');
         if fileid < 0
             errordlg('log cannot be saved');
             error('log cannot be saved');
         end
     end
-    fprintf(fileid, '%d,%d,%d,%d',handles.firstpt_val,handles.prepts_val,handles.recon_matrix_size_val,handles.numpts_val);
+    fprintf(fileid, '\n%d,%d,%d,%d',handles.prepts_val,handles.firstpt_val,handles.recon_matrix_size_val,handles.numpts_val);
    
     fclose('all');
 end
