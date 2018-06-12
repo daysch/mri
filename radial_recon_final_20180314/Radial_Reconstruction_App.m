@@ -22,7 +22,7 @@ function varargout = Radial_Reconstruction_App(varargin)
 
 % Edit the above text to modify the response to help Radial_Reconstruction_App
 
-% Last Modified by GUIDE v2.5 12-Jun-2018 13:29:42
+% Last Modified by GUIDE v2.5 12-Jun-2018 17:04:29
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -54,6 +54,9 @@ function Radial_Reconstruction_App_OpeningFcn(hObject, eventdata, handles, varar
 
 % Choose default command line output for Radial_Reconstruction_App
 handles.output = hObject;
+
+% set up variables
+handles.debug = false;
 
 % Update handles structure
 guidata(hObject, handles);
@@ -97,17 +100,21 @@ end
 % check optional field number of points to be used
 if ~isempty(get(handles.numpts, 'String'))
     handles.numpts_val = str2double(get(handles.numpts, 'String'));
-elseif isfield(handles, 'numpts_val')
-    handles = rmfield(handles, 'numpts_val');
+else
+    handles.numpts_val = NaN;
 end
 
 guidata(hObject, handles);   % Store handles
 
 % run reconstruction. inform gui user of errors
-try
+if handles.debug 
     radial_recon_rs2d_20180314_two_grads(handles);
-catch M
-    errordlg(['Unexpected error in execution of reconstruction:' newline M.message]);
+else
+    try
+        radial_recon_rs2d_20180314_two_grads(handles);
+    catch M
+        errordlg(['Unexpected error in execution of reconstruction:' newline M.message]);
+    end
 end
     
 
@@ -226,3 +233,15 @@ function choose_file_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
     handles.data_path = uigetdir('../');
     guidata(hObject, handles);   % Store handles
+
+
+% --- Executes on button press in show_errors.
+function show_errors_Callback(hObject, eventdata, handles)
+% hObject    handle to show_errors (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of show_errors
+handles.debug = ~get(hObject,'Value');
+guidata(hObject, handles);
+

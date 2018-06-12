@@ -84,7 +84,7 @@ function radial_recon_rs2d_20180314_two_grads(handles)
     npts = size(data_grads_undead,2); % Uses all the points acquired except those at the beginning.
 
     % if number of points specified in gui, uses that
-    if nargin == 1 && isfield(handles, 'numpts_val')
+    if nargin == 1 && ~isnan(handles.numpts_val)
         numpts = handles.numpts_val; 
         data_grads_undead = data_grads_undead(:,1:deadpts+numpts);
         npts = size(data_grads_undead,2);
@@ -270,7 +270,7 @@ function radial_recon_rs2d_20180314_two_grads(handles)
         add_string_gui(handles, 'Done. ');
     end
     %% Optional plotting for more slices.
-
+%{
     coloraxis = [0 max(max(max(abs(recon_final))))];
 
     for n = 8:2:56
@@ -282,6 +282,26 @@ function radial_recon_rs2d_20180314_two_grads(handles)
     for n = 8:2:56
         figure(1200+n); pcolor(squeeze(abs(recon_final(n,:,:)))); shading flat; colormap('gray'); title(['sagittal slice ' num2str(n)]); caxis(coloraxis)
     end
+ %}
+    %% Save log to CSV
+    addpath(fileparts(fileparts(mfilename)));
+    if ~exist('log.csv', 'file')
+        fileid = fopen([fileparts(fileparts(mfilename('fullpath'))) filesep 'log.csv'], 'wt');
+        if fileid < 0
+            errordlg('log cannot be saved');
+            error('log cannot be saved');
+        end
+        fprintf(fileid, 'Point at zero,First point,Recon matrix size,Number of points');
+    else
+        fileid = fopen([fileparts(fileparts(mfilename)) filesep 'log.csv'], 'at');
+        if fileid < 0
+            errordlg('log cannot be saved');
+            error('log cannot be saved');
+        end
+    end
+    fprintf(fileid, '%d,%d,%d,%d',handles.firstpt_val,handles.prepts_val,handles.recon_matrix_size_val,handles.numpts_val);
+   
+    fclose('all');
 end
 
 % prints a given string to the gui
