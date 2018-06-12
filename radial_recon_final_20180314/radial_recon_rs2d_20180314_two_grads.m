@@ -11,6 +11,7 @@ function radial_recon_rs2d_20180314_two_grads(handles)
     if nargin == 1    % to GUI
         set(handles.update, 'String', 'Importing data .... ');
     end
+    
     tic; % begins a timer for data loading
 
     % Choose file, if called from command line
@@ -169,8 +170,7 @@ function radial_recon_rs2d_20180314_two_grads(handles)
     for n=(nspokes1+1):nspokes % just the points in the second gradient set
         k_filtered(n,:) = data_grads(n,:).*filter2*prog_ratio/dk;
         if deadpts ~=0
-        k_filtered(n,ceil(dk*deadpts):end) = zeros(1,nsample-ceil(dk*deadpts)+1);
-        else
+            k_filtered(n,ceil(dk*deadpts):end) = zeros(1,nsample-ceil(dk*deadpts)+1);
         end
     end
 

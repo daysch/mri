@@ -79,6 +79,7 @@ function varargout = Radial_Reconstruction_App_OutputFcn(hObject, eventdata, han
 varargout{1} = handles.output;
 
 
+%% run the reconstruction
 % --- Executes on button press in run.
 function run_Callback(hObject, eventdata, handles)
 % hObject    handle to run (see GCBO)
@@ -97,7 +98,7 @@ elseif ~isfield(handles, 'data_path') || isa(handles.data_path, 'double')
     return;
 end
 
-% check optional field number of points to be used
+% check optional field, number of points to be used
 if ~isempty(get(handles.numpts, 'String'))
     handles.numpts_val = str2double(get(handles.numpts, 'String'));
 else
@@ -106,7 +107,7 @@ end
 
 guidata(hObject, handles);   % Store handles
 
-% run reconstruction. inform gui user of errors
+% run reconstruction. inform gui user of errors (if desired)
 if handles.debug 
     radial_recon_rs2d_20180314_two_grads(handles);
 else
@@ -164,7 +165,7 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
     set(hObject,'BackgroundColor','white');
 end
 
-
+%% closes all open figures
 % --- Executes on button press in close_all.
 function close_all_Callback(hObject, eventdata, handles)
 % hObject    handle to close_all (see GCBO)
@@ -225,7 +226,7 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
     set(hObject,'BackgroundColor','white');
 end
 
-
+%% select folder to be used
 % --- Executes on button press in choose_file.
 function choose_file_Callback(hObject, eventdata, handles)
 % hObject    handle to choose_file (see GCBO)
@@ -235,6 +236,7 @@ function choose_file_Callback(hObject, eventdata, handles)
     guidata(hObject, handles);   % Store handles
 
 
+%% allows option for command line errors to be shown in popup instead
 % --- Executes on button press in show_errors.
 function show_errors_Callback(hObject, eventdata, handles)
 % hObject    handle to show_errors (see GCBO)
