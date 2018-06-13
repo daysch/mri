@@ -148,7 +148,7 @@ function radial_recon_rs2d_20180314_two_grads(handles)
                 if n>res
                     filter(n) = 0;
                     filter2(n) = 0;
-                end 
+                end
             end
         otherwise
             for n=1:nsample
@@ -220,9 +220,18 @@ function radial_recon_rs2d_20180314_two_grads(handles)
         end
     end
     %}
-    % should do the same as the above code, in about 2/3 the time
+
+    % should do the same as the above code, in about 1/2 to 2/3 the time
     k_final = k_blurred ./ senscor;
     k_final(senscor == 0) = 0;
+ %{
+    % same as second version, but runs on GPU for faster processing
+    k_blurred_gpu = gpuArray(k_blurred);
+    senscor_gpu = gpuArray(senscor);
+    k_final_gpu = k_blurred_gpu ./ senscor_gpu;
+    k_final = k_final_gpu;
+    clear senscor_gpu k_blurred_gpu k_final_gpu;
+ %}
     toc
     if nargin == 1
         update_gui_time(handles); % sends loading time to gui
@@ -283,25 +292,38 @@ function radial_recon_rs2d_20180314_two_grads(handles)
         figure(1200+n); pcolor(squeeze(abs(recon_final(n,:,:)))); shading flat; colormap('gray'); title(['sagittal slice ' num2str(n)]); caxis(coloraxis)
     end
  %}
-    %% Save log to CSV
-    addpath(fileparts(fileparts(mfilename)));
-    if ~exist('log.csv', 'file')
-        fileid = fopen([fileparts(fileparts(mfilename('fullpath'))) filesep 'log.csv'], 'wt');
-        if fileid < 0
-            errordlg('log cannot be saved');
-            error('log cannot be saved');
+    %% Save log to CSV, when called from GUI
+    if nargin == 1
+        addpath(fileparts(fileparts(mfilename)));
+        if ~exist('log.csv', 'file')
+            fileid = fopen([fileparts(fileparts(mfilename('fullpath'))) filesep 'log.csv'], 'wt');
+            if fileid < 0
+                errordlg('log cannot be saved');
+                error('log cannot be saved');
+            end
+            fprintf(fileid, 'Point at zero,First point of usable data,Recon matrix size,Number of points');
+        else
+            fileid = fopen([fileparts(fileparts(mfilename('fullpath'))) filesep 'log.csv'], 'at');
+            if fileid < 0
+                errordlg('log cannot be saved');
+                error('log cannot be saved');
+            end
         end
-        fprintf(fileid, 'Point at zero,First point of usable data,Recon matrix size,Number of points');
-    else
-        fileid = fopen([fileparts(fileparts(mfilename('fullpath'))) filesep 'log.csv'], 'at');
-        if fileid < 0
-            errordlg('log cannot be saved');
-            error('log cannot be saved');
-        end
+        fprintf(fileid, '\n%d,%d,%d,%d',handles.prepts_val,handles.firstpt_val,handles.recon_matrix_size_val,handles.numpts_val);
+
+        fclose('all');
     end
-    fprintf(fileid, '\n%d,%d,%d,%d',handles.prepts_val,handles.firstpt_val,handles.recon_matrix_size_val,handles.numpts_val);
-   
-    fclose('all');
+
+% save values to workspace. Not really good practice, but needed for
+% Marcus's phantom code.
+% (want to clear figures, to avoid large data files):
+% https://stackoverflow.com/questions/45560181/avoid-saving-of-graphics-in-matlab
+varData = whos;
+saveIndex = cellfun(@isempty, regexp({varData.class}, 'matlab.(graphics|ui)'));
+saveVars = {varData(saveIndex).name};
+clear handles;
+save('workspace.mat', saveVars{:});
+load_workspace;
 end
 
 % prints a given string to the gui
@@ -324,6 +346,9 @@ function str = mat_to_string(mat)
     mat = mat(:);
     mat = mat';
     str = compose(mat);
+    if isa(str, 'cell')
+        str = cell2mat(str);
+    end
 end
     
 

@@ -79,7 +79,7 @@ toc;
 %% Also a very time-consuming step
 disp('Interpolating data .... ')
 tic;
-for n = 1:nmeas
+parfor n = 1:nmeas
     x_proj_k = y_grad(n)/grad_amp_big*x_k_datagen;
     y_proj_k = x_grad(n)/grad_amp_big*y_k_datagen;
     z_proj_k = z_grad(n)/grad_amp_big*z_k_datagen;

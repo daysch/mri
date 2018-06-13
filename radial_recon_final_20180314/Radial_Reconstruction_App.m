@@ -22,7 +22,7 @@ function varargout = Radial_Reconstruction_App(varargin)
 
 % Edit the above text to modify the response to help Radial_Reconstruction_App
 
-% Last Modified by GUIDE v2.5 12-Jun-2018 17:04:29
+% Last Modified by GUIDE v2.5 13-Jun-2018 11:04:13
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -246,4 +246,7 @@ function show_errors_Callback(hObject, eventdata, handles)
 % Hint: get(hObject,'Value') returns toggle state of show_errors
 handles.debug = ~get(hObject,'Value');
 guidata(hObject, handles);
+
+%% legacy code, due to MATLAB guide error
+function figure1_SizeChangedFcn(hObject, eventdata, handles)
 
