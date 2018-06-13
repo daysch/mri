@@ -3,7 +3,7 @@
 % C:\Users\rs2d\Documents\MATLAB\radial_recon_final_20180314\senscor
 
 
-function k_phantom_blurred = blur_mhd_20180314_two_acquisitions(recon_matrix_size, nsample, data_in, x_grad, y_grad, z_grad)
+function k_phantom_blurred = blur_mhd_20180314_two_acquisitions(recon_matrix_size, nsample, data_in, x_grad, y_grad, z_grad, buffer)
 
 k_phantom_blurred_re = zeros(recon_matrix_size,recon_matrix_size,recon_matrix_size);
 k_phantom_blurred_im = zeros(recon_matrix_size,recon_matrix_size,recon_matrix_size);
@@ -52,7 +52,8 @@ for n = 1:nmeas
     end
     
     % The rest is primarily just the Chesler code.
-    for m = 1:nsample
+    last_data = nsample - buffer;
+    for m = 1:last_data
         data=data_in(n,m);
         if data~=0 % saves time by not processing zeros (confirmed via testing)
             kxl = find(x_k_rect<=proj_x(m), 1, 'last');

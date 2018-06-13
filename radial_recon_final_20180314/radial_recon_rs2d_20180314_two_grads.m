@@ -61,7 +61,8 @@ function radial_recon_rs2d_20180314_two_grads(handles)
     title('raw data')
     legend('real','imag','mag')
     xlabel('point number')
-
+    
+    % load values from GUI/ask user for input
     if nargin == 0
         % npts_filtered = 2^6;
         prepts = input('point at zero of time: '); % this is typically 1 with a large DW, as the PW is small
@@ -71,6 +72,7 @@ function radial_recon_rs2d_20180314_two_grads(handles)
     else
         prepts = handles.prepts_val;
         firstpt = handles.firstpt_val;
+        buffer = handles.buffer_val;
     end
     deadpts = firstpt-prepts-1;
     data_grads_undead = data_grads_full(:, (prepts+1):end);
@@ -186,7 +188,7 @@ function radial_recon_rs2d_20180314_two_grads(handles)
         add_string_gui(handles, 'Step 2. Blurring data .... ');
     end
     tic; % timing
-    k_blurred = blur_mhd_20180314_two_acquisitions(recon_matrix_size, nsample, k_filtered, x_grad, y_grad, z_grad);
+    k_blurred = blur_mhd_20180314_two_acquisitions(recon_matrix_size, nsample, k_filtered, x_grad, y_grad, z_grad, buffer);
     toc; % timing
     if nargin == 1
         update_gui_time(handles); % sends loading time to gui
@@ -204,7 +206,7 @@ function radial_recon_rs2d_20180314_two_grads(handles)
         add_string_gui(handles, 'Step 3. Sensitivity correction .... ');
     end
     tic
-    senscor = senscor_gen_20180314(recon_matrix_size, nsample, nspokes1, filter, filter2, x_grad, y_grad, z_grad);
+    senscor = senscor_gen_20180314(recon_matrix_size, nsample, nspokes1, filter, filter2, x_grad, y_grad, z_grad, buffer);
     %{
     %% unvectorized code:
     k_final = zeros(recon_matrix_size,recon_matrix_size,recon_matrix_size);

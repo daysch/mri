@@ -2,7 +2,7 @@
 % THIS FILE YOU SHOULD DELETE ALL OF THE SENSITIVITY CORRECTION FILES IN 
 % C:\Users\rs2d\Documents\MATLAB\radial_recon_final_20180314\senscor
 
-function senscor = senscor_gen_20180314(recon_matrix_size, nsample, nspokes1, filter, filter2, x_grad, y_grad, z_grad)
+function senscor = senscor_gen_20180314(recon_matrix_size, nsample, nspokes1, filter, filter2, x_grad, y_grad, z_grad, buffer)
 
 nmeas = length(x_grad);
 k_step3_rad = ones(nmeas,nsample);
@@ -19,13 +19,20 @@ grad_amp_small = sqrt(x_grad(end)^2+z_grad(end)^2+y_grad(end)^2);
 %         for n=1:nsample
 %             filter(n) = n^2;
 %         end
+        %{
+        BELOW CODE REPLACED BY VECTORIZATION 
         k_step3_rad_filtered = zeros(nmeas,nsample);
         for n=1:nspokes1
             k_step3_rad_filtered(n,:) = k_step3_rad(n,:).*filter;
         end
+
         for n=(nspokes1+1):nmeas
             k_step3_rad_filtered(n,:) = k_step3_rad(n,:).*filter2;
         end
+        %}
+        
+        k_step3_rad_filtered = [(k_step3_rad(1:nspokes1,:) .* filter); k_step3_rad((nspokes1 + 1):nmeas,:) .*filter2] ; 
+
         %% Step 2 %%
         % % From its proper position in the k-domain
         % % each sample point is blurred in a trilinear
@@ -41,7 +48,7 @@ grad_amp_small = sqrt(x_grad(end)^2+z_grad(end)^2+y_grad(end)^2);
         if exist(filename, 'file') == 2
             load([pathname filename]);
         else
-        k_step3_blurred = blur_mhd_20180314_two_acquisitions(recon_matrix_size, nsample, k_step3_rad_filtered, x_grad, y_grad, z_grad);
+        k_step3_blurred = blur_mhd_20180314_two_acquisitions(recon_matrix_size, nsample, k_step3_rad_filtered, x_grad, y_grad, z_grad, buffer);
          
         senscor = k_step3_blurred;
         
