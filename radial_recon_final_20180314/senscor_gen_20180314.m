@@ -1,6 +1,7 @@
 % Runs the blurring algorithm on a filtered array of ones. IF YOU CHANGE
 % THIS FILE YOU SHOULD DELETE ALL OF THE SENSITIVITY CORRECTION FILES IN 
 % C:\Users\rs2d\Documents\MATLAB\radial_recon_final_20180314\senscor
+% AND (potentially) UPDATE THE WAY THOSE FILES ARE GENERATED (below)
 
 function senscor = senscor_gen_20180314(recon_matrix_size, nsample, nspokes1, filter, filter2, x_grad, y_grad, z_grad, buffer)
 
@@ -44,7 +45,9 @@ grad_amp_small = sqrt(x_grad(end)^2+z_grad(end)^2+y_grad(end)^2);
         % wasted.
         
         pathname = [fileparts(which('radial_recon_rs2d_20180314_two_grads')) filesep 'senscor' filesep];
-        filename = sprintf('senscor_%dpts_%dspokes_at_%f_%dspokes_at_%f.mat', nsample, nspokes1,grad_amp_big,nspokes2,grad_amp_small);
+        filename = sprintf('senscor_%dpts_%dspokes_at_%f_%dspokes_at_%f_matsize_%d_buffer_%d.mat', nsample, nspokes1,grad_amp_big,nspokes2,grad_amp_small,recon_matrix_size,buffer);
+        %% UNCOMMENT NEXT LINE WHEN ACTUALLY IN USE: 
+        addpath senscor;
         if exist(filename, 'file') == 2
             load([pathname filename]);
         else

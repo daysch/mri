@@ -1,6 +1,7 @@
 % PLACES POINTS IN K-SPACE FROM ACQUISITIONS WITH 2 DIFFERENT GRADIENTS.
 % IF YOU CHANGE THIS FILE YOU SHOULD DELETE ALL OF THE SENSITIVITY CORRECTION FILES IN 
 % C:\Users\rs2d\Documents\MATLAB\radial_recon_final_20180314\senscor
+% AND (potentially) UPDATE THE WAY THOSE FILES ARE GENERATED (below)
 
 
 function k_phantom_blurred = blur_mhd_20180314_two_acquisitions(recon_matrix_size, nsample, data_in, x_grad, y_grad, z_grad, buffer)

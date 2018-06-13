@@ -320,10 +320,10 @@ function radial_recon_rs2d_20180314_two_grads(handles)
 % Marcus's phantom code.
 % (want to clear figures, to avoid large data files):
 % https://stackoverflow.com/questions/45560181/avoid-saving-of-graphics-in-matlab
+clear handles;
 varData = whos;
 saveIndex = cellfun(@isempty, regexp({varData.class}, 'matlab.(graphics|ui)'));
 saveVars = {varData(saveIndex).name};
-clear handles;
 save('workspace.mat', saveVars{:});
 load_workspace;
 end
