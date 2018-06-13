@@ -11,7 +11,7 @@ if fileid < 0
     error('File data.dat cannot be read');
 end
 data = fread(fileid,'float32','b');
-data = data(1:2:end)+j*(data(2:2:end));
+data = data(1:2:end)+1j*(data(2:2:end));
 fclose(fileid);
 
 

@@ -19,6 +19,7 @@ nmeas = length(x_grad);
 
 %%
 grad_amp_large = sqrt(x_grad(1)^2+z_grad(1)^2+y_grad(1)^2); % finds the amplitude of the main gradient
+last_data = nsample - buffer; % determines the end point of usable data
 
 for n = 1:nmeas
     
@@ -53,8 +54,7 @@ for n = 1:nmeas
     end
     
     % The rest is primarily just the Chesler code.
-    last_data = nsample - buffer;
-    for m = 1:last_data
+    for m = 1:nsample
         data=data_in(n,m);
         if data~=0 % saves time by not processing zeros (confirmed via testing)
             kxl = find(x_k_rect<=proj_x(m), 1, 'last');

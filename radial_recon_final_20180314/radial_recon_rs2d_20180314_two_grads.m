@@ -23,7 +23,7 @@ function radial_recon_rs2d_20180314_two_grads(handles)
     % data_path = 'C:\Users\rs2d\Spinlab Data\Workspace\zte_mhd\zte_20180320\Data'; % this is the path where the data is stored when developing code in Sequence Development
 
     [data_raw, params] = openrs2d(data_path);
-
+    
     % Loading parameters from the params structure
     DS = str2double(params.DUMMY_SCAN);
     npts = str2double(params.ACQUISITION_MATRIX_DIMENSION_1D);
