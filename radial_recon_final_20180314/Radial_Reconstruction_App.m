@@ -89,7 +89,7 @@ handles.firstpt_val = str2double(get(handles.firstpt, 'String'));
 handles.prepts_val = str2double(get(handles.prepts, 'String'));
 handles.recon_matrix_size_val = str2double(get(handles.recon_matrix_size, 'String'));
 
-% make sure all values properly filled out
+% make sure all values filled out
 if isnan(handles.firstpt_val) || isnan(handles.prepts_val) || ... 
         isnan(handles.recon_matrix_size_val)
     errordlg('Please fill out parameters');
@@ -99,9 +99,28 @@ elseif ~isfield(handles, 'data_path') || isa(handles.data_path, 'double')
     return;
 end
 
-% check optional field, number of points to be used
+% confirm validity of inputs
+if mod(handles.firstpt_val, 1) ~= 0 || mod(handles.prepts_val, 1) ~= 0 || mod(handles.recon_matrix_size_val, 1) ~= 0
+    errordlg('parameters must be integers');
+    return;
+elseif handles.firstpt_val <= handles.prepts_val
+    errordlg('First point must be greater than zero point');
+    return;
+elseif handles.prepts_val < 0
+    errordlg('zero point cannot be negative');
+    return;
+elseif handles.recon_matrix_size_val <= 0 || mod(handles.recon_matrix_size_val, 2) ~= 0
+    errordlg('recon matrix must be a positive multiple of two');
+    return
+end
+
+% check and validate optional field: number of points to be used
 if ~isempty(get(handles.numpts, 'String'))
     handles.numpts_val = str2double(get(handles.numpts, 'String'));
+    if mod(handles.numpts_val, 1) ~= 0 || handles.numpts_val <= 0
+        errordlg('number of points must be a positive integer');
+        return;
+    end
 else
     handles.numpts_val = NaN;
 end
@@ -234,6 +253,8 @@ function choose_file_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
     handles.data_path = uigetdir('../');
+    [~, folder] = fileparts(handles.data_path);
+    set(handles.folder_display, 'String', folder);
     guidata(hObject, handles);   % Store handles
 
 
