@@ -10,9 +10,9 @@ function k_phantom_blurred = blur_mhd_20180314_two_acquisitions(recon_matrix_siz
 
     nmeas = length(x_grad);
     
-    % parallel programming for speed. Splitting into six (the number of
-    % cores in the lab machine)
+    %% parallel programming for speed. Splitting into six (the number of cores in the lab machine)
     NUM_CORES = 6;
+    
     % divide job
     start_pos = floor(linspace(1, nmeas, NUM_CORES + 1));
     start_pos = start_pos(1:end-1);

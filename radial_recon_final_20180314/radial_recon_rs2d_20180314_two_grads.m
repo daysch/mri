@@ -14,15 +14,31 @@ function radial_recon_rs2d_20180314_two_grads(handles)
     
     tic; % begins a timer for data loading
 
-    % Choose file, if called from command line
+    % Choose file, if called from command line. If from GUI, check whether same data
+    % folder as previously used
     if nargin == 0
         data_path = uigetdir('../');
+        [data_raw, params] = openrs2d(data_path);
     else
-        data_path = handles.data_path;
+        % try to find data_path in saved workspace. use already parsed data if data_path hasn't changed
+        try
+            warning('off','MATLAB:load:variableNotFound') % suppress warning if variables don't exist
+            vars = load('workspace','data_path','data_all','params');
+            warning('on','MATLAB:load:variableNotFound')
+            if ~isfield(vars, 'data_path') || ~isequal(vars.data_path, handles.data_path) ...
+                    || ~isfield(vars, 'data_all') || ~isfield(vars, 'params')
+                data_path = handles.data_path;
+                [data_raw, params] = openrs2d(data_path);
+            else
+                data_all = vars.data_all; params = vars. params; data_path = vars.data_path;
+            end
+        catch
+            data_path = handles.data_path;
+            [data_raw, params] = openrs2d(data_path);
+        end
     end
     % data_path = 'C:\Users\rs2d\Spinlab Data\Workspace\zte_mhd\zte_20180320\Data'; % this is the path where the data is stored when developing code in Sequence Development
 
-    [data_raw, params] = openrs2d(data_path);
     
     % Loading parameters from the params structure
     DS = str2double(params.DUMMY_SCAN);
@@ -30,7 +46,9 @@ function radial_recon_rs2d_20180314_two_grads(handles)
     n2d = str2double(params.ACQUISITION_MATRIX_DIMENSION_2D);
     n3d = str2double(params.ACQUISITION_MATRIX_DIMENSION_3D);
     nspokes = str2double(params.TOTAL_SPOKES);
-    data_all = transpose(reshape(data_raw,npts,n2d*n3d));
+    if ~exist('data_all', 'var') % we may have already received data_all from workspace
+        data_all = transpose(reshape(data_raw,npts,n2d*n3d));
+    end
     data_grads_full = data_all((DS+1):end,:);
     data_zeros = data_all(1:9,:);
     data_ramp = data_all(10:DS,:);
