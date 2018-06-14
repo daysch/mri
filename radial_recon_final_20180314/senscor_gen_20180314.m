@@ -3,7 +3,7 @@
 % C:\Users\rs2d\Documents\MATLAB\radial_recon_final_20180314\senscor
 % AND (potentially) UPDATE THE WAY THOSE FILES ARE GENERATED (below)
 
-function senscor = senscor_gen_20180314(recon_matrix_size, nsample, nspokes1, filter, filter2, x_grad, y_grad, z_grad, buffer)
+function senscor = senscor_gen_20180314(recon_matrix_size, nsample, nspokes1, filter, filter2, x_grad, y_grad, z_grad)
 
 nmeas = length(x_grad);
 k_step3_rad = ones(nmeas,nsample);
@@ -45,13 +45,13 @@ grad_amp_small = sqrt(x_grad(end)^2+z_grad(end)^2+y_grad(end)^2);
         % wasted.
         
         pathname = [fileparts(which('radial_recon_rs2d_20180314_two_grads')) filesep 'senscor' filesep];
-        filename = sprintf('senscor_%dpts_%dspokes_at_%f_%dspokes_at_%f_matsize_%d_buffer_%d.mat', nsample, nspokes1,grad_amp_big,nspokes2,grad_amp_small,recon_matrix_size,buffer);
+        filename = sprintf('senscor_%dpts_%dspokes_at_%f_%dspokes_at_%f_matsize_%d.mat', nsample, nspokes1,grad_amp_big,nspokes2,grad_amp_small,recon_matrix_size);
         %% UNCOMMENT NEXT LINE WHEN ACTUALLY IN USE: 
         % addpath senscor;
         if exist(filename, 'file') == 2
             load([pathname filename]);
         else
-        k_step3_blurred = blur_mhd_20180314_two_acquisitions(recon_matrix_size, nsample, k_step3_rad_filtered, x_grad, y_grad, z_grad, buffer);
+        k_step3_blurred = blur_mhd_20180314_two_acquisitions(recon_matrix_size, nsample, k_step3_rad_filtered, x_grad, y_grad, z_grad);
          
         senscor = k_step3_blurred;
         

@@ -4,7 +4,7 @@
 % AND (potentially) UPDATE THE WAY THOSE FILES ARE GENERATED (below)
 
 
-function k_phantom_blurred = blur_mhd_20180314_two_acquisitions(recon_matrix_size, nsample, data_in, x_grad, y_grad, z_grad, buffer)
+function k_phantom_blurred = blur_mhd_20180314_two_acquisitions(recon_matrix_size, nsample, data_in, x_grad, y_grad, z_grad)
 
 k_phantom_blurred_re = zeros(recon_matrix_size,recon_matrix_size,recon_matrix_size);
 k_phantom_blurred_im = zeros(recon_matrix_size,recon_matrix_size,recon_matrix_size);
@@ -19,7 +19,6 @@ nmeas = length(x_grad);
 
 %%
 grad_amp_large = sqrt(x_grad(1)^2+z_grad(1)^2+y_grad(1)^2); % finds the amplitude of the main gradient
-last_data = nsample - buffer; % determines the end point of usable data
 
 for n = 1:nmeas
     

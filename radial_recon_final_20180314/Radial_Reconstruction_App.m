@@ -22,7 +22,7 @@ function varargout = Radial_Reconstruction_App(varargin)
 
 % Edit the above text to modify the response to help Radial_Reconstruction_App
 
-% Last Modified by GUIDE v2.5 13-Jun-2018 15:08:01
+% Last Modified by GUIDE v2.5 14-Jun-2018 10:25:52
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -79,7 +79,7 @@ function varargout = Radial_Reconstruction_App_OutputFcn(hObject, eventdata, han
 varargout{1} = handles.output;
 
 
-%% run the reconstruction
+%% run the reconstruction.
 % --- Executes on button press in run.
 function run_Callback(hObject, eventdata, handles)
 % hObject    handle to run (see GCBO)
@@ -88,11 +88,10 @@ function run_Callback(hObject, eventdata, handles)
 handles.firstpt_val = str2double(get(handles.firstpt, 'String'));
 handles.prepts_val = str2double(get(handles.prepts, 'String'));
 handles.recon_matrix_size_val = str2double(get(handles.recon_matrix_size, 'String'));
-handles.buffer_val = str2double(get(handles.buffer, 'String'));
 
 % make sure all values properly filled out
 if isnan(handles.firstpt_val) || isnan(handles.prepts_val) || ... 
-        isnan(handles.recon_matrix_size_val) || isnan(handles.buffer_val)
+        isnan(handles.recon_matrix_size_val)
     errordlg('Please fill out parameters');
     return;
 elseif ~isfield(handles, 'data_path') || isa(handles.data_path, 'double')
@@ -174,7 +173,7 @@ function close_all_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 set(handles.figure1, 'HandleVisibility', 'off');
-answer = questdlg('Close all figures?','Confirm Closing','Confirm','Cancel', 'Cancel');
+answer = questdlg('Close all figures?','Confirm Closing','Confirm','Cancel', 'Confirm');
 switch answer 
     case 'Confirm'
         close all;
@@ -249,29 +248,31 @@ function show_errors_Callback(hObject, eventdata, handles)
 handles.debug = ~get(hObject,'Value');
 guidata(hObject, handles);
 
+
 %% legacy code, due to MATLAB guide error
 function figure1_SizeChangedFcn(hObject, eventdata, handles)
 
+%% return key presses run button
+% https://www.mathworks.com/matlabcentral/answers/1450-gui-for-keyboard-pressed-representing-the-push-button
+% --- Executes on key press with focus on figure1 or any of its controls.
+function figure1_WindowKeyPressFcn(hObject, eventdata, handles)
+% hObject    handle to figure1 (see GCBO)
+% eventdata  structure with the following fields (see MATLAB.UI.FIGURE)
+%	Key: name of the key that was pressed, in lower case
+%	Character: character interpretation of the key(s) that was pressed
+%	Modifier: name(s) of the modifier key(s) (i.e., control, shift) pressed
+% handles    structure with handles and user data (see GUIDATA)
+switch eventdata.Key
+    case 'return'
+        % need to deselect fields so they can update
+        uicontrol(handles.run);
+        run_Callback(handles.run, eventdata, handles);
+end
 
-
-
-function buffer_Callback(hObject, eventdata, handles)
-% hObject    handle to buffer (see GCBO)
+%% For debugging purposes
+% --- Executes on button press in pushbutton5.
+function pushbutton5_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton5 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of buffer as text
-%        str2double(get(hObject,'String')) returns contents of buffer as a double
-
-
-% --- Executes during object creation, after setting all properties.
-function buffer_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to buffer (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
+keyboard
