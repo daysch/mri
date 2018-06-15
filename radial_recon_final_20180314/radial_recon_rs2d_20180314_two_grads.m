@@ -317,14 +317,12 @@ function radial_recon_rs2d_20180314_two_grads(handles)
         if ~exist('log.csv', 'file')
             fileid = fopen([fileparts(fileparts(mfilename('fullpath'))) filesep 'log.csv'], 'wt');
             if fileid < 0
-                errordlg('log cannot be saved');
                 error('log cannot be saved');
             end
             fprintf(fileid, 'Point at zero,First point of usable data,Recon matrix size,Number of points');
         else
             fileid = fopen([fileparts(fileparts(mfilename('fullpath'))) filesep 'log.csv'], 'at');
             if fileid < 0
-                errordlg('log cannot be saved');
                 error('log cannot be saved');
             end
         end

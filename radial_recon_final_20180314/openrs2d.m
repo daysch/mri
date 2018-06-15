@@ -7,7 +7,6 @@ function [data, params] = openrs2d(pathname)
 pathname  = num2str(pathname);
 fileid = fopen([pathname filesep 'data.dat']);
 if fileid < 0
-    errordlg('File data.dat cannot be read');
     error('File data.dat cannot be read');
 end
 data = fread(fileid,'float32','b');
