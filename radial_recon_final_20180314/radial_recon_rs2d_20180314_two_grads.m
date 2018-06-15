@@ -9,7 +9,7 @@ function radial_recon_rs2d_20180314_two_grads(handles)
     % close all % closes all open figures
     disp('Importing data .... ')
     if nargin == 1    % to GUI
-        add_string_gui(handles, 'Importing data .... ');
+        add_string_gui(handles, [newline 'Importing data .... ']);
         drawnow;
     end
     
@@ -21,17 +21,16 @@ function radial_recon_rs2d_20180314_two_grads(handles)
         data_path = uigetdir('../');
         [data_raw, params] = openrs2d(data_path);
     else
-        % try to find data_path in saved workspace. use already parsed data if data_path hasn't changed
+        % try to find data_path in current workspace. use already parsed data if data_path hasn't changed
         try
-            warning('off','MATLAB:load:variableNotFound') % suppress warning if variables don't exist
-            vars = load('workspace','data_path','data_all','params');
-            warning('on','MATLAB:load:variableNotFound')
-            if ~isfield(vars, 'data_path') || ~isequal(vars.data_path, handles.data_path) ...
-                    || ~isfield(vars, 'data_all') || ~isfield(vars, 'params')
+            old_path = evalin('base', 'data_path');
+            data_all = evalin('base', 'data_all');
+            params = evalin('base', 'params');
+            if ~isequal(old_path, handles.data_path)
                 data_path = handles.data_path;
                 [data_raw, params] = openrs2d(data_path);
             else
-                data_all = vars.data_all; params = vars. params; data_path = vars.data_path;
+                data_path = old_path;
             end
         catch
             data_path = handles.data_path;
@@ -331,14 +330,15 @@ function radial_recon_rs2d_20180314_two_grads(handles)
         fclose('all');
     end
 
-% save values to workspace. Not really good practice, but needed for
-% Marcus's phantom code.
-% (want to clear figures, to avoid large data files):
-% https://stackoverflow.com/questions/45560181/avoid-saving-of-graphics-in-matlab
-clear handles;
-varData = whos;
-saveIndex = cellfun(@isempty, regexp({varData.class}, 'matlab.(graphics|ui)'));
-saveVars = {varData(saveIndex).name};
-save('workspace.mat', saveVars{:});
-load_workspace;
+    % save values to workspace. Not really good practice, but needed for
+    % Marcus's phantom code.
+    % (want to clear figures, to avoid large data files):
+    % https://stackoverflow.com/questions/45560181/avoid-saving-of-graphics-in-matlab
+    clear handles;
+    varData = whos;
+    saveIndex = cellfun(@isempty, regexp({varData.class}, 'matlab.(graphics|ui)'));
+    saveVars = {varData(saveIndex).name};
+    for ii = 1:length(saveVars)
+        assignin('base', saveVars{ii}, eval(saveVars{ii}));
+    end
 end

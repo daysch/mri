@@ -22,7 +22,7 @@ function varargout = Radial_Reconstruction_App(varargin)
 
 % Edit the above text to modify the response to help Radial_Reconstruction_App
 
-% Last Modified by GUIDE v2.5 15-Jun-2018 15:09:36
+% Last Modified by GUIDE v2.5 15-Jun-2018 15:47:30
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -295,20 +295,24 @@ for ii = 1:length(subFolders)
     
     % pause if pause button has been pressed
     if get(handles.pause, 'userdata') == 1
-        set(handles.cancel_batch, 'visible', 'on');
+        figure(handles.figure1);
         set(handles.pause, 'enable', 'on');
         set(handles.pause, 'String', 'Continue');
-        add_string_gui(handles, 'paused');
+        add_string_gui(handles, [newline 'paused']);
         while ~handles.continue
             % quit, if selected
             if handles.quit_batch
+                % reset everything and quit
                 handles.quit_batch = false;
+                handles.continue = true;
+                set(handles.batch_run, 'enable', 'on');
                 set(handles.pause, 'enable', 'off');
                 set(handles.pause, 'String', 'Pause batch job');
-                set(handles.batch_run, 'enable', 'on');
-                set(handles.cancel_batch, 'visible', 'off');
                 set(handles.pause, 'userdata', 0);
-                handles.continue = true;
+                set(handles.cancel_batch, 'visible', 'off');
+                set(handles.cancel_batch, 'String', 'Cancel batch job');
+                set(handles.cancel_batch, 'enable', 'on');
+                set(handles.cancel_batch, 'visible', 'off');
                 guidata(hObject, handles);
                 add_string_gui(handles, 'Batch job aborted');
                 return;
@@ -329,7 +333,7 @@ for ii = 1:length(subFolders)
         drawnow;
     catch M
         processed_so_far = [processed_so_far newline string(['ERROR IN PROCESSING FOLDER ' subFolders(ii).name ':' newline, M.message newline])];
-        set(handles.update, 'String', [processed_so_far newline]);
+        set(handles.update, 'String', processed_so_far);
     end
 end
 % clean up
@@ -350,6 +354,7 @@ if get(handles.pause, 'userdata') == 0
     add_string_gui(handles, [newline 'Pausing after current reconstruction...' newline]);
     set(handles.pause, 'String', 'pausing...');
     set(handles.pause, 'enable', 'off');
+    set(handles.cancel_batch, 'visible', 'on');
     drawnow;
 else
     set(handles.pause, 'userdata', 0);
@@ -358,6 +363,7 @@ else
     add_string_gui(handles, 'Continuing...');
     set(handles.pause, 'String', 'Pause batch job');
     set(handles.pause, 'enable', 'on');
+    set(handles.cancel_batch, 'visible', 'off');
 end
 
 
@@ -367,4 +373,15 @@ function cancel_batch_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 handles.quit_batch = true;
+set(handles.cancel_batch, 'enable', 'off');
+set(handles.pause, 'String', 'canceling...');
+set(handles.cancel_batch, 'String', 'canceling...');
+add_string_gui(handles, [newline 'Canceling after current reconstruction ...' newline]);
 guidata(hObject, handles);
+
+
+% --- Executes during object creation, after setting all properties.
+function update_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to update (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
