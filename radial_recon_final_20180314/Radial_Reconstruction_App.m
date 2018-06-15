@@ -22,7 +22,7 @@ function varargout = Radial_Reconstruction_App(varargin)
 
 % Edit the above text to modify the response to help Radial_Reconstruction_App
 
-% Last Modified by GUIDE v2.5 15-Jun-2018 10:51:35
+% Last Modified by GUIDE v2.5 15-Jun-2018 15:09:36
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -57,6 +57,8 @@ handles.output = hObject;
 
 % set up variables
 handles.debug = false;
+handles.continue = true;
+handles.quit_batch = false;
 
 % Update handles structure
 guidata(hObject, handles);
@@ -86,7 +88,17 @@ function run_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)    
 set(handles.update, 'String', ''); % initialize update box
-run_reconstruction(hObject, eventdata, handles);
+try
+    validate_inputs;
+catch M
+    switch M.message
+        case 'known error'
+            return;
+        otherwise
+            rethrow(M);
+    end
+end
+run_reconstruction(handles);
 
 function prepts_Callback(hObject, eventdata, handles)
 % hObject    handle to prepts (see GCBO)
@@ -253,52 +265,106 @@ function batch_run_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
+% validate inputs
+try
+    validate_inputs;
+catch M
+    switch M.message
+        case 'known error'
+            return;
+        otherwise
+            rethrow(M);
+    end
+end
+
 % https://www.mathworks.com/matlabcentral/answers/166629-is-there-any-way-to-list-all-folders-only-in-the-level-directly-below-a-selected-directory
-files = dir('C:\Users\John\Documents\MATLAB\work');
-dirFlags = [files.isdir];
+files = dir(handles.data_path);
+dirFlags = [files.isdir] & ~strcmp({files.name},'.') & ~strcmp({files.name},'..'); % takes all folders except '.' and '..'
 subFolders = files(dirFlags);
 folder_path = handles.data_path; % save path to current folder
 
-% initialize update box
+% initialize update box and buttons
 processed_so_far = [];
 set(handles.update, 'String', '');
+set(handles.pause, 'enable', 'on');
+set(handles.batch_run, 'enable', 'off');
 
 % iterate through subfolders, skipping ones that cause errors
 for ii = 1:length(subFolders)
     handles = guidata(hObject); % update handles
     
     % pause if pause button has been pressed
-    if handles.pause.Value
-        answer = uiwait(questdlg('Batch job paused','Continue batch or Cancel batch?','Continue Batch','Cancel Batch', 'Continue'));
-        switch answer 
-            case 'Cancel Batch'
-                add_string_gui(handles, 'Batch job canceled')
+    if get(handles.pause, 'userdata') == 1
+        set(handles.cancel_batch, 'visible', 'on');
+        set(handles.pause, 'enable', 'on');
+        set(handles.pause, 'String', 'Continue');
+        add_string_gui(handles, 'paused');
+        while ~handles.continue
+            % quit, if selected
+            if handles.quit_batch
+                handles.quit_batch = false;
+                set(handles.pause, 'enable', 'off');
+                set(handles.pause, 'String', 'Pause batch job');
+                set(handles.batch_run, 'enable', 'on');
+                set(handles.cancel_batch, 'visible', 'off');
+                set(handles.pause, 'userdata', 0);
+                handles.continue = true;
+                guidata(hObject, handles);
+                add_string_gui(handles, 'Batch job aborted');
                 return;
+            end
+            pause(0.1);
+            handles = guidata(hObject);
         end
-        handles.pause.Value = 0;
-        guidata(hObject, handles);
+        set(handles.cancel_batch, 'visible', 'off');
     end
     
     % run next folder
     add_string_gui(handles, ['Processing folder ' subFolders(ii).name]);
     handles.data_path = [folder_path filesep subFolders(ii).name];
     try
-        run_reconsruction(handles.run, eventdata, handles);
-        processed_so_far(end + 1) = string(['processed folder ' subFolders(ii).name]);
+        run_reconstruction(handles);
+        processed_so_far = [processed_so_far string(['processed folder ' subFolders(ii).name])];
         set(handles.update, 'String', processed_so_far);
+        drawnow;
     catch M
-        add_string_gui(handles, ['unable to process ' subFolders(ii).name: newline M.message]);
+        processed_so_far = [processed_so_far newline string(['ERROR IN PROCESSING FOLDER ' subFolders(ii).name ':' newline, M.message newline])];
+        set(handles.update, 'String', [processed_so_far newline]);
     end
-    
-    % update 
 end
+% clean up
+set(handles.pause, 'enable', 'off');
+set(handles.pause, 'String', 'pause batch job');
+set(handles.batch_run, 'enable', 'on');
 
-%% Pauses batch run
+%% Pauses/unpauses batch run
 % --- Executes on button press in pause.
 function pause_Callback(hObject, eventdata, handles)
 % hObject    handle to pause (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-handles.pause.Value = 1;
+if get(handles.pause, 'userdata') == 0 
+    set(handles.pause, 'userdata', 1);
+    handles.continue = false;
+    guidata(hObject, handles);
+    add_string_gui(handles, [newline 'Pausing after current reconstruction...' newline]);
+    set(handles.pause, 'String', 'pausing...');
+    set(handles.pause, 'enable', 'off');
+    drawnow;
+else
+    set(handles.pause, 'userdata', 0);
+    handles.continue = true;
+    guidata(hObject, handles);
+    add_string_gui(handles, 'Continuing...');
+    set(handles.pause, 'String', 'Pause batch job');
+    set(handles.pause, 'enable', 'on');
+end
+
+
+% --- Executes on button press in cancel_batch.
+function cancel_batch_Callback(hObject, eventdata, handles)
+% hObject    handle to cancel_batch (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+handles.quit_batch = true;
 guidata(hObject, handles);
-add_string_gui(handles, 'Pausing after current reconstruction...');
