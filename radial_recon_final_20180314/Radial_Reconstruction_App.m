@@ -22,7 +22,7 @@ function varargout = Radial_Reconstruction_App(varargin)
 
 % Edit the above text to modify the response to help Radial_Reconstruction_App
 
-% Last Modified by GUIDE v2.5 14-Jun-2018 10:25:52
+% Last Modified by GUIDE v2.5 15-Jun-2018 10:51:35
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -84,61 +84,9 @@ varargout{1} = handles.output;
 function run_Callback(hObject, eventdata, handles)
 % hObject    handle to run (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-handles.firstpt_val = str2double(get(handles.firstpt, 'String'));
-handles.prepts_val = str2double(get(handles.prepts, 'String'));
-handles.recon_matrix_size_val = str2double(get(handles.recon_matrix_size, 'String'));
-
-% make sure all values filled out
-if isnan(handles.firstpt_val) || isnan(handles.prepts_val) || ... 
-        isnan(handles.recon_matrix_size_val)
-    errordlg('Please fill out parameters');
-    return;
-elseif ~isfield(handles, 'data_path') || isa(handles.data_path, 'double')
-    errordlg('Please select folder');
-    return;
-end
-
-% confirm validity of inputs
-if mod(handles.firstpt_val, 1) ~= 0 || mod(handles.prepts_val, 1) ~= 0 || mod(handles.recon_matrix_size_val, 1) ~= 0
-    errordlg('parameters must be integers');
-    return;
-elseif handles.firstpt_val <= handles.prepts_val
-    errordlg('First point must be greater than zero point');
-    return;
-elseif handles.prepts_val < 0
-    errordlg('zero point cannot be negative');
-    return;
-elseif handles.recon_matrix_size_val <= 0 || mod(handles.recon_matrix_size_val, 2) ~= 0
-    errordlg('recon matrix must be a positive multiple of two');
-    return
-end
-
-% check and validate optional field: number of points to be used
-if ~isempty(get(handles.numpts, 'String'))
-    handles.numpts_val = str2double(get(handles.numpts, 'String'));
-    if mod(handles.numpts_val, 1) ~= 0 || handles.numpts_val <= 0
-        errordlg('number of points must be a positive integer');
-        return;
-    end
-else
-    handles.numpts_val = NaN;
-end
-
-guidata(hObject, handles);   % Store handles
-
-% run reconstruction. inform gui user of errors (if desired)
-if handles.debug 
-    radial_recon_rs2d_20180314_two_grads(handles);
-else
-    try
-        radial_recon_rs2d_20180314_two_grads(handles);
-    catch M
-        errordlg(['Unexpected error in execution of reconstruction:' newline M.message]);
-    end
-end
-    
-
+% handles    structure with handles and user data (see GUIDATA)    
+set(handles.update, 'String', ''); % initialize update box
+run_reconstruction(hObject, eventdata, handles);
 
 function prepts_Callback(hObject, eventdata, handles)
 % hObject    handle to prepts (see GCBO)
@@ -297,3 +245,60 @@ function pushbutton5_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 keyboard
+
+%% batch run of subfolders in folder
+% --- Executes on button press in batch_run.
+function batch_run_Callback(hObject, eventdata, handles)
+% hObject    handle to batch_run (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% https://www.mathworks.com/matlabcentral/answers/166629-is-there-any-way-to-list-all-folders-only-in-the-level-directly-below-a-selected-directory
+files = dir('C:\Users\John\Documents\MATLAB\work');
+dirFlags = [files.isdir];
+subFolders = files(dirFlags);
+folder_path = handles.data_path; % save path to current folder
+
+% initialize update box
+processed_so_far = [];
+set(handles.update, 'String', '');
+
+% iterate through subfolders, skipping ones that cause errors
+for ii = 1:length(subFolders)
+    handles = guidata(hObject); % update handles
+    
+    % pause if pause button has been pressed
+    if handles.pause.Value
+        answer = uiwait(questdlg('Batch job paused','Continue batch or Cancel batch?','Continue Batch','Cancel Batch', 'Continue'));
+        switch answer 
+            case 'Cancel Batch'
+                add_string_gui(handles, 'Batch job canceled')
+                return;
+        end
+        handles.pause.Value = 0;
+        guidata(hObject, handles);
+    end
+    
+    % run next folder
+    add_string_gui(handles, ['Processing folder ' subFolders(ii).name]);
+    handles.data_path = [folder_path filesep subFolders(ii).name];
+    try
+        run_reconsruction(handles.run, eventdata, handles);
+        processed_so_far(end + 1) = string(['processed folder ' subFolders(ii).name]);
+        set(handles.update, 'String', processed_so_far);
+    catch M
+        add_string_gui(handles, ['unable to process ' subFolders(ii).name: newline M.message]);
+    end
+    
+    % update 
+end
+
+%% Pauses batch run
+% --- Executes on button press in pause.
+function pause_Callback(hObject, eventdata, handles)
+% hObject    handle to pause (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+handles.pause.Value = 1;
+guidata(hObject, handles);
+add_string_gui(handles, 'Pausing after current reconstruction...');

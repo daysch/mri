@@ -9,7 +9,8 @@ function radial_recon_rs2d_20180314_two_grads(handles)
     % close all % closes all open figures
     disp('Importing data .... ')
     if nargin == 1    % to GUI
-        set(handles.update, 'String', 'Importing data .... ');
+        add_string_gui(handles, 'Importing data .... ');
+        drawnow;
     end
     
     tic; % begins a timer for data loading
@@ -58,10 +59,8 @@ function radial_recon_rs2d_20180314_two_grads(handles)
     try
         grads = csvread([data_path filesep 'gradient_file.txt']); % reads in the gradient file
     catch
-        errordlg('Could not load gradient_file.txt');
-        return;
-    end
-        
+        error('Could not load gradient_file.txt');
+    end 
     x_grad_ramp = grads(10:DS,1); % collect the gradients used in the dummy scans
     x_grad(1:end) = grads((DS+1):end,1); % parses the gradient variable 
     y_grad(1:end) = grads((DS+1):end,2); % parses the gradient variable 
@@ -345,30 +344,3 @@ saveVars = {varData(saveIndex).name};
 save('workspace.mat', saveVars{:});
 load_workspace;
 end
-
-% prints a given string to the gui
-function add_string_gui(handles, addition)
-    old_update = get(handles.update, 'String');
-    old_update = mat_to_string(old_update); % handles.update String is stored as multidimensional matrix. Must be converted to string
-    set(handles.update, 'String', sprintf('%s%s', old_update, addition));
-    drawnow;
-end
-
-% prints the time elapsed to the gui
-function update_gui_time(handles)
-    add_string_gui(handles, sprintf('Elapsed time is %s seconds', num2str(toc)));
-end
-
-% coverts matrix representation of string to datatype string, preserving newlines
-function str = mat_to_string(mat)
-    mat(:,end + 1) = '\'; mat(:,end + 1) = 'n';
-    mat = mat'; 
-    mat = mat(:);
-    mat = mat';
-    str = compose(mat);
-    if isa(str, 'cell')
-        str = cell2mat(str);
-    end
-end
-    
-
