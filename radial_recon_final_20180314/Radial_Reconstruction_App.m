@@ -22,7 +22,7 @@ function varargout = Radial_Reconstruction_App(varargin)
 
 % Edit the above text to modify the response to help Radial_Reconstruction_App
 
-% Last Modified by GUIDE v2.5 15-Jun-2018 15:47:30
+% Last Modified by GUIDE v2.5 18-Jun-2018 11:54:19
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -81,28 +81,38 @@ function varargout = Radial_Reconstruction_App_OutputFcn(hObject, eventdata, han
 varargout{1} = handles.output;
 
 
-%% run the reconstruction.
+%% run the reconstruction on single folder
 % --- Executes on button press in run.
 function run_Callback(hObject, eventdata, handles)
 % hObject    handle to run (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)    
-set(handles.update, 'String', ''); % initialize update box
+
+% initialize update box
+set(handles.update, 'String', '');
+
+% validate inputs
 try
     disable_gui(handles);
     validate_inputs;
 catch M
+    reset_gui(handles, hObject);
     switch M.message
         case 'known error'
-            reset_gui(handles, hObject);
             return;
         otherwise
-            reset_gui(handles, hObject);
             rethrow(M);
     end
 end
-run_reconstruction(handles, hObject);
-reset_gui(handles, hObject);
+
+% run reconstruction and reset for next
+try 
+    run_reconstruction(handles, hObject);
+    reset_gui(handles, hObject);
+catch M
+    reset_gui(handles, hObject);
+    rethrow(M);
+end
 
 function prepts_Callback(hObject, eventdata, handles)
 % hObject    handle to prepts (see GCBO)
@@ -155,15 +165,16 @@ function close_all_Callback(hObject, eventdata, handles)
 % hObject    handle to close_all (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-set(handles.figure1, 'HandleVisibility', 'off');
+
+% ask user to confirm closing, close if confirmed
 answer = questdlg('Close all figures?','Confirm Closing','Confirm','Cancel', 'Confirm');
 switch answer 
     case 'Confirm'
+        set(handles.figure1, 'HandleVisibility', 'off'); % keeps the gui from being closed
         close all;
+        set(handles.figure1, 'HandleVisibility', 'on');
+        drawnow;
 end
-set(handles.figure1, 'HandleVisibility', 'on');
-drawnow;
-
 
 
 function numpts_Callback(hObject, eventdata, handles)
@@ -228,7 +239,6 @@ function show_errors_Callback(hObject, eventdata, handles)
 % hObject    handle to show_errors (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-
 % Hint: get(hObject,'Value') returns toggle state of show_errors
 handles.debug = ~get(hObject,'Value');
 guidata(hObject, handles);
@@ -236,6 +246,8 @@ guidata(hObject, handles);
 
 %% legacy code, due to MATLAB guide error
 function figure1_SizeChangedFcn(hObject, eventdata, handles)
+function recon_Callback(hObject, eventdata, handles)
+function phant_Callback(hObject, eventdata, handles)
 
 %% return key presses run button
 % https://www.mathworks.com/matlabcentral/answers/1450-gui-for-keyboard-pressed-representing-the-push-button
@@ -275,35 +287,36 @@ try
     disable_gui(handles);
     validate_inputs;
 catch M
+    reset_gui(handles, hObject);
     switch M.message
         case 'known error'
-            reset_gui(handles, hObject);
             return;
         otherwise
-            reset_gui(handles, hObject);
             rethrow(M);
     end
 end
 
+% get list of subfolders
 % https://www.mathworks.com/matlabcentral/answers/166629-is-there-any-way-to-list-all-folders-only-in-the-level-directly-below-a-selected-directory
 files = dir(handles.data_path);
 dirFlags = [files.isdir] & ~strcmp({files.name},'.') & ~strcmp({files.name},'..'); % takes all folders except '.' and '..'
 subFolders = files(dirFlags);
-folder_path = handles.data_path; % save path to current folder
+folder_path = handles.data_path; % save path to outer folder
 
 % initialize update box and buttons
-processed_so_far = [];
+processed_so_far = []; % string to update user on progress of batch
 set(handles.update, 'String', '');
 set(handles.pause, 'enable', 'on');
-set(handles.batch_run, 'enable', 'off');
 
 % iterate through subfolders, skipping ones that cause errors
 for ii = 1:length(subFolders)
-    handles = guidata(hObject); % update handles
+    % update handles
+    handles = guidata(hObject);
+    % bring gui to front
+    figure(handles.figure1);
     
     % pause if pause button has been pressed
     if get(handles.pause, 'userdata') == 1
-        figure(handles.figure1);
         set(handles.pause, 'enable', 'on');
         set(handles.pause, 'String', 'Continue');
         add_string_gui(handles, [newline 'paused']);
@@ -312,6 +325,8 @@ for ii = 1:length(subFolders)
             if handles.quit_batch
                 % reset everything and quit
                 reset_gui(handles, hObject);
+                handles.data_path = folder_path;
+                guidata(hObject, handles);
                 add_string_gui(handles, 'Batch job aborted');
                 return;
             end
@@ -321,7 +336,7 @@ for ii = 1:length(subFolders)
         set(handles.cancel_batch, 'visible', 'off');
     end
     
-    % run next folder
+    % process next folder
     add_string_gui(handles, ['Processing folder ' subFolders(ii).name]);
     handles.data_path = [folder_path filesep subFolders(ii).name];
     try
@@ -336,6 +351,9 @@ for ii = 1:length(subFolders)
 end
 % clean up
 reset_gui(handles, hObject);
+handles.data_path = folder_path;
+guidata(hObject, handles);
+figure(handles.figure1);
 
 %% Pauses/unpauses batch run
 % --- Executes on button press in pause.
@@ -343,26 +361,34 @@ function pause_Callback(hObject, eventdata, handles)
 % hObject    handle to pause (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+
+% if unpaused, pause. If paused, unpause
 if get(handles.pause, 'userdata') == 0 
+    % set internal variables
     set(handles.pause, 'userdata', 1);
     handles.continue = false;
     guidata(hObject, handles);
+    
+    % set gui
     add_string_gui(handles, [newline 'Pausing after current reconstruction...' newline]);
     set(handles.pause, 'String', 'pausing...');
     set(handles.pause, 'enable', 'off');
     set(handles.cancel_batch, 'visible', 'on');
     drawnow;
 else
+    % set internal variables
     set(handles.pause, 'userdata', 0);
     handles.continue = true;
     guidata(hObject, handles);
+    
+    % set gui
     add_string_gui(handles, 'Continuing...');
     set(handles.pause, 'String', 'Pause batch job');
     set(handles.pause, 'enable', 'on');
     set(handles.cancel_batch, 'visible', 'off');
 end
 
-
+%% cancels a batch run
 % --- Executes on button press in cancel_batch.
 function cancel_batch_Callback(hObject, eventdata, handles)
 % hObject    handle to cancel_batch (see GCBO)

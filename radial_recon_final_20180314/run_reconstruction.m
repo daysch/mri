@@ -12,7 +12,6 @@ else
     catch M
         errordlg(['Unexpected error in execution of reconstruction:' newline M.message]);
         add_string_gui(handles, ['Unexpected error in execution of reconstruction:' newline M.message])
-        reset_gui(handles, hObject)
         error(['Unexpected error in execution of reconstruction:' newline M.message]);
     end
 end
