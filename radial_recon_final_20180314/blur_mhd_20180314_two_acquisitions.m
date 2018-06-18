@@ -56,7 +56,6 @@ function k_phantom_blurred = blur_portion(start, last, recon_matrix_size, nsampl
     k_phantom_blurred_im = zeros(recon_matrix_size,recon_matrix_size,recon_matrix_size);
     for n = start:last
 
-        % grad_amp = sqrt(x_grad(n)^2+z_grad(n)^2+y_grad(n)^2); % finds the amplitude of the current gradient
         % the next 3 lines calculate the distance in k space traversed in each dimension between points
         % this method means that the data in the main gradient stretches from
         % the zero in k-space to the edge of a sphere of diameter equal to
