@@ -92,6 +92,7 @@ function pseudo_data_phantom(handles)
     % end
 
     % NEW CODE (~0.4 seconds)
+    grad_amp_big = sqrt(x_grad(2)^2+z_grad(2)^2+y_grad(2)^2);
     x_proj_k = y_grad/grad_amp_big*x_k_datagen;
     y_proj_k = x_grad/grad_amp_big*y_k_datagen;
     z_proj_k = z_grad/grad_amp_big*z_k_datagen;
@@ -102,3 +103,8 @@ function pseudo_data_phantom(handles)
     data_grads_full = rad_k_lines;
     %%
     npts = nsample;
+    
+    % save phantom object to file
+    mkdir([fileparts(fileparts(mfilename('fullpath'))) filesep 'phantom_objects' filesep 'unique_id_goes_here']);
+    save([fileparts(fileparts(mfilename('fullpath'))) filesep 'phantom_objects' filesep 'unique_id_goes_here' filesep 'parsed_data'], ... 
+        'npts', 'nspokes', 'data_grads_full', 'x_grad', 'y_grad', 'z_grad');
