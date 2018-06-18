@@ -330,15 +330,8 @@ function radial_recon_rs2d_20180314_two_grads(handles)
         fclose('all');
     end
 
-    % save values to workspace. Not really good practice, but needed for
-    % Marcus's phantom code.
-    % (want to clear figures, to avoid large data files):
-    % https://stackoverflow.com/questions/45560181/avoid-saving-of-graphics-in-matlab
-    clear handles;
-    varData = whos;
-    saveIndex = cellfun(@isempty, regexp({varData.class}, 'matlab.(graphics|ui)'));
-    saveVars = {varData(saveIndex).name};
-    for ii = 1:length(saveVars)
-        assignin('base', saveVars{ii}, eval(saveVars{ii}));
-    end
+    % save values to file for phantom to potentially use
+    save([fileparts(fileparts(mfilename('fullpath'))) filesep 'phantom_create' filesep 'workspace'], ... 
+        'x_grad', 'y_grad', 'z_grad', 'grad_amp_big');
+    
 end
