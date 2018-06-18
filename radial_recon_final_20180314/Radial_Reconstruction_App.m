@@ -89,16 +89,20 @@ function run_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)    
 set(handles.update, 'String', ''); % initialize update box
 try
+    disable_gui(handles);
     validate_inputs;
 catch M
     switch M.message
         case 'known error'
+            reset_gui(handles, hObject);
             return;
         otherwise
+            reset_gui(handles, hObject);
             rethrow(M);
     end
 end
-run_reconstruction(handles);
+run_reconstruction(handles, hObject);
+reset_gui(handles, hObject);
 
 function prepts_Callback(hObject, eventdata, handles)
 % hObject    handle to prepts (see GCBO)
@@ -245,9 +249,10 @@ function figure1_WindowKeyPressFcn(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 switch eventdata.Key
     case 'return'
-        % need to deselect fields so they can update
-        uicontrol(handles.run);
-        run_Callback(handles.run, eventdata, handles);
+        if get(handles.pause, 'userdata') == 0 % make sure we're not paused
+            uicontrol(handles.run); % need to deselect other fields so they can update
+            run_Callback(handles.run, eventdata, handles);
+        end
 end
 
 %% For debugging purposes
@@ -267,12 +272,15 @@ function batch_run_Callback(hObject, eventdata, handles)
 
 % validate inputs
 try
+    disable_gui(handles);
     validate_inputs;
 catch M
     switch M.message
         case 'known error'
+            reset_gui(handles, hObject);
             return;
         otherwise
+            reset_gui(handles, hObject);
             rethrow(M);
     end
 end
@@ -303,17 +311,7 @@ for ii = 1:length(subFolders)
             % quit, if selected
             if handles.quit_batch
                 % reset everything and quit
-                handles.quit_batch = false;
-                handles.continue = true;
-                set(handles.batch_run, 'enable', 'on');
-                set(handles.pause, 'enable', 'off');
-                set(handles.pause, 'String', 'Pause batch job');
-                set(handles.pause, 'userdata', 0);
-                set(handles.cancel_batch, 'visible', 'off');
-                set(handles.cancel_batch, 'String', 'Cancel batch job');
-                set(handles.cancel_batch, 'enable', 'on');
-                set(handles.cancel_batch, 'visible', 'off');
-                guidata(hObject, handles);
+                reset_gui(handles, hObject);
                 add_string_gui(handles, 'Batch job aborted');
                 return;
             end
@@ -327,7 +325,7 @@ for ii = 1:length(subFolders)
     add_string_gui(handles, ['Processing folder ' subFolders(ii).name]);
     handles.data_path = [folder_path filesep subFolders(ii).name];
     try
-        run_reconstruction(handles);
+        run_reconstruction(handles, hObject);
         processed_so_far = [processed_so_far string(['processed folder ' subFolders(ii).name])];
         set(handles.update, 'String', processed_so_far);
         drawnow;
@@ -337,9 +335,7 @@ for ii = 1:length(subFolders)
     end
 end
 % clean up
-set(handles.pause, 'enable', 'off');
-set(handles.pause, 'String', 'pause batch job');
-set(handles.batch_run, 'enable', 'on');
+reset_gui(handles, hObject);
 
 %% Pauses/unpauses batch run
 % --- Executes on button press in pause.
