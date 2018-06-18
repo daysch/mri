@@ -13,57 +13,48 @@ function radial_recon_rs2d_20180314_two_grads(handles)
         drawnow;
     end
     
-    tic; % begins a timer for data loading
-
-    % Choose file, if called from command line. If from GUI, check whether same data
-    % folder as previously used
+    % Choose file, if called from command line. Otherwise, use provided
+    % data path
     if nargin == 0
         data_path = uigetdir('../');
-        [data_raw, params] = openrs2d(data_path);
     else
-        % try to find data_path in current workspace. use already parsed data if data_path hasn't changed
-        try
-            old_path = evalin('base', 'data_path');
-            data_all = evalin('base', 'data_all');
-            params = evalin('base', 'params');
-            if ~isequal(old_path, handles.data_path)
-                data_path = handles.data_path;
-                [data_raw, params] = openrs2d(data_path);
-            else
-                data_path = old_path;
-            end
-        catch
-            data_path = handles.data_path;
-            [data_raw, params] = openrs2d(data_path);
-        end
+        data_path = handles.data_path;
     end
     % data_path = 'C:\Users\rs2d\Spinlab Data\Workspace\zte_mhd\zte_20180320\Data'; % this is the path where the data is stored when developing code in Sequence Development
 
-    
-    % Loading parameters from the params structure
-    DS = str2double(params.DUMMY_SCAN);
-    npts = str2double(params.ACQUISITION_MATRIX_DIMENSION_1D);
-    n2d = str2double(params.ACQUISITION_MATRIX_DIMENSION_2D);
-    n3d = str2double(params.ACQUISITION_MATRIX_DIMENSION_3D);
-    nspokes = str2double(params.TOTAL_SPOKES);
-    if ~exist('data_all', 'var') % we may have already received data_all from workspace
-        data_all = transpose(reshape(data_raw,npts,n2d*n3d));
-    end
-    data_grads_full = data_all((DS+1):end,:);
-    data_zeros = data_all(1:9,:);
-    data_ramp = data_all(10:DS,:);
-    x_grad = NaN(nspokes,1);
-    y_grad = NaN(nspokes,1);
-    z_grad = NaN(nspokes,1);
+    tic; % begins a timer for data loading
+    % Try to load already parsed file. Otherwise, parse xml amd save
     try
-        grads = csvread([data_path filesep 'gradient_file.txt']); % reads in the gradient file
+        % error('error') % force an error to reparse data
+        load([data_path filesep 'parsed_data']);
     catch
-        error('Could not load gradient_file.txt');
-    end 
-    x_grad_ramp = grads(10:DS,1); % collect the gradients used in the dummy scans
-    x_grad(1:end) = grads((DS+1):end,1); % parses the gradient variable 
-    y_grad(1:end) = grads((DS+1):end,2); % parses the gradient variable 
-    z_grad(1:end) = grads((DS+1):end,3); % parses the gradient variable 
+        [data_raw, params] = openrs2d(data_path);
+        DS = str2double(params.DUMMY_SCAN);
+        npts = str2double(params.ACQUISITION_MATRIX_DIMENSION_1D);
+        n2d = str2double(params.ACQUISITION_MATRIX_DIMENSION_2D);
+        n3d = str2double(params.ACQUISITION_MATRIX_DIMENSION_3D);
+        nspokes = str2double(params.TOTAL_SPOKES);
+        data_all = transpose(reshape(data_raw,npts,n2d*n3d));
+        data_grads_full = data_all((DS+1):end,:);
+        data_zeros = data_all(1:9,:);
+        data_ramp = data_all(10:DS,:);
+        x_grad = NaN(nspokes,1);
+        y_grad = NaN(nspokes,1);
+        z_grad = NaN(nspokes,1);
+        try
+            grads = csvread([data_path filesep 'gradient_file.txt']); % reads in the gradient file
+        catch
+            error('Could not load gradient_file.txt');
+        end 
+        x_grad_ramp = grads(10:DS,1); % collect the gradients used in the dummy scans
+        x_grad(1:end) = grads((DS+1):end,1); % parses the gradient variable 
+        y_grad(1:end) = grads((DS+1):end,2); % parses the gradient variable 
+        z_grad(1:end) = grads((DS+1):end,3); % parses the gradient variable 
+        
+        % save relavent parsed data
+        save([data_path filesep 'parsed_data'], 'npts', 'nspokes', 'data_grads_full', ...
+            'x_grad', 'y_grad', 'z_grad');
+    end
     toc; % displays data loading time
     if nargin == 1
         update_gui_time(handles); % sends loading time to gui
@@ -80,6 +71,7 @@ function radial_recon_rs2d_20180314_two_grads(handles)
     
     % load values from GUI/ask user for input
     if nargin == 0
+        commandwindow;
         % npts_filtered = 2^6;
         prepts = input('point at zero of time: '); % this is typically 1 with a large DW, as the PW is small
         % the point at prepts that is selected will be unused as well as all
@@ -332,6 +324,6 @@ function radial_recon_rs2d_20180314_two_grads(handles)
 
     % save values to file for phantom to potentially use
     save([fileparts(fileparts(mfilename('fullpath'))) filesep 'phantom_create' filesep 'workspace'], ... 
-        'x_grad', 'y_grad', 'z_grad', 'grad_amp_big');
+        'npts', 'nspokes', 'data_grads_full', 'x_grad', 'y_grad', 'z_grad');
     
 end
