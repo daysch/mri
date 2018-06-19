@@ -59,7 +59,7 @@ handles.output = hObject;
 handles.matrix_size = 64;
 
 % set up variables
-handles.real_phans = [];
+handles.real_phans = {};
 
 % Update handles structure
 guidata(hObject, handles);
@@ -299,6 +299,7 @@ function add_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
+% validate inputs
 try
     set(handles.generate, 'enable', 'on');
     validate_inputs;
@@ -311,6 +312,23 @@ catch M
             rethrow(M);
     end
 end
+
+% select shape type
+switch get(handles.phan_type, 'Value')
+    case 1
+        handles.phan_type_val = 'ellipsoid';
+    case 2
+        handles.phan_type_val = 'rectangular';
+end
+
+% generate matrix
+new_phan = phantom_mhd_new(handles.matrix_size, handles.phan_type_val, ...
+                           handles.phan_extent_val, handles.phan_offset_val, ...
+                           handles.intensity_val);
+
+% save matrix                       
+handles.real_phans = [handles.real_phans; new_phan];
+guidata(hObject, handles);
 
 
 function update_Callback(hObject, eventdata, handles)

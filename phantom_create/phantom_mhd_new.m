@@ -1,5 +1,5 @@
 % creates a phantom of matrix_size in three dimensions. The available types
-% are 'cubic', and 'ellipsoidal' Extent is specified in number of points in
+% are 'rectangular', and 'ellipsoidal' Extent is specified in number of points in
 % each direction [x y z]. offcenter is an array of three points [x y z] 
 % denoting how far from the center the object resides. Intensity determines
 % the color of the grayscale image
@@ -7,7 +7,7 @@
 function phan = phantom_mhd_new(matrix_size, type, phantom_extent, offcenter, intensity)
 phan = [];
 switch type
-    case 'cubic'
+    case 'rectangular'
         %% cubic phantom
         if nargin==2
             phantom_extent = [matrix_size/4, matrix_size/4, matrix_size/4];
