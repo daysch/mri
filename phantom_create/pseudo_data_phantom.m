@@ -17,7 +17,7 @@ function pseudo_data_phantom(handles)
 
     phan_radius = recon_matrix_size/4;
     phan_offset = [-7 -5 0];
-    phan_shape = 'cylinder'; % 'spherical', 'cubic', 'rods', 'complex', 'cylinder'
+    phan_shape = 'cylinder'; % 'ellipsoidal', 'cubic', 'rods', 'complex', 'cylinder'
     % grad_amp_big = 2;
     % grad_amp_this = 100;
     % nrings1 = 51;
@@ -108,3 +108,4 @@ function pseudo_data_phantom(handles)
     mkdir([fileparts(fileparts(mfilename('fullpath'))) filesep 'phantom_objects' filesep 'unique_id_goes_here']);
     save([fileparts(fileparts(mfilename('fullpath'))) filesep 'phantom_objects' filesep 'unique_id_goes_here' filesep 'parsed_data'], ... 
         'npts', 'nspokes', 'data_grads_full', 'x_grad', 'y_grad', 'z_grad');
+    save([fileparts(fileparts(mfilename('fullpath'))) filesep 'phantom_objects' filesep 'unique_id_goes_here' filesep 'phan_true'], 'phan_true');

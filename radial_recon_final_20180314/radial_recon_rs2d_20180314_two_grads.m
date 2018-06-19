@@ -1,4 +1,4 @@
-% Runs the radial reconstruction on a data set of your choosing, leaving all the variables in the Matlab Workspace.
+% Runs the radial reconstruction on a data set of your choosing
 function radial_recon_rs2d_20180314_two_grads(handles)
     if nargin == 0
         clear % clears the workspace when called from the command line without arguments
@@ -275,15 +275,8 @@ function radial_recon_rs2d_20180314_two_grads(handles)
         add_string_gui(handles, 'Plotting results .... ');
     end
 
-    figure(101); pcolor(squeeze(abs(recon_final(:,:,recon_matrix_size/2+1)))'); shading flat; colormap('gray'); title('axial slice')
-    figure(102); pcolor(squeeze(abs(recon_final(:,recon_matrix_size/2+1,:)))'); shading flat; colormap('gray'); title('coronal slice')
-    figure(103); pcolor(squeeze(abs(recon_final(recon_matrix_size/2+1,:,:)))'); shading flat; colormap('gray'); title('sagittal slice')
-
-
-    figure(201); pcolor(squeeze(abs(k_final(:,:,recon_matrix_size/2+1)))); shading flat; colormap('gray'); title('axial slice k-space')
-    figure(202); pcolor(squeeze(abs(k_final(:,recon_matrix_size/2+1,:)))); shading flat; colormap('gray'); title('coronal slice k-space')
-    figure(203); pcolor(squeeze(abs(k_final(recon_matrix_size/2+1,:,:)))); shading flat; colormap('gray'); title('sagittal slice k-space')
-
+    imshow3Dfull(abs(recon_final));
+    
     disp('Done.')
     if nargin == 1
         add_string_gui(handles, 'Done. ');
