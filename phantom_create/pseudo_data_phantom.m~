@@ -1,7 +1,7 @@
 % This calculates a set of data for a known phantom. It takes in variable:
-% handles, a structure which must contain nsamples, phan_extent_val (vector with [x y z] values),
-% phan_offset_val (vector with [x y z] values), x_grad, y_grad, z_grad,
-% phan_shape_val, and intensity_val
+% handles, a structure which must contain nsamples, phan_radius (vector with [x y z] values),
+% phan_offset (vector with [x y z] values), x_grad, y_grad, z_grad, and
+% intensity
 
 %%
 function rad_k_lines = pseudo_data_phantom(handles)
@@ -18,10 +18,10 @@ function rad_k_lines = pseudo_data_phantom(handles)
     % nsample = 2^6; %2^10;
     
     % gather variables from handles
-    phan_extent = handles.phan_extent_val;
-    phan_offset = handles.phan_offset_val;
-    phan_shape = handles.phan_shape_val; %'ellipsoidal', 'rectangular
-    intensity = handles.intensity_val;
+    phan_radius = handles.phan_radius;
+    phan_offset = handles.phan_offset;
+    phan_shape = handles.phan_shape; %'ellipsoidal', 'rectangular
+    intensity = handles.intensity;
     x_grad = handles.x_grad;
     y_grad = handles.y_grad;
     z_grad = handles. z_grad;
@@ -42,7 +42,8 @@ function rad_k_lines = pseudo_data_phantom(handles)
     % phase behavior but may not be great for a heavily varying sample.
 
     data_gen_method = 'interp_true'; % 'big_phantom'  or 'interp_true'
-    phan_true = phantom_mhd_new(recon_matrix_size,phan_shape, phan_extent, phan_offset, intensity);
+
+    phan_true = phantom_mhd_new(recon_matrix_size,phan_shape, phan_radius, phan_offset, intensity);
     phan_k_true = ifftshift(ifftn(ifftshift(phan_true)));
     phan_recon1_true = fftshift(fftn(fftshift(phan_k_true)));
    

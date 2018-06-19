@@ -22,7 +22,7 @@ function varargout = Radial_Reconstruction_App(varargin)
 
 % Edit the above text to modify the response to help Radial_Reconstruction_App
 
-% Last Modified by GUIDE v2.5 18-Jun-2018 11:54:19
+% Last Modified by GUIDE v2.5 19-Jun-2018 16:38:30
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -91,7 +91,7 @@ function run_Callback(hObject, eventdata, handles)
 % initialize update box
 set(handles.update, 'String', '');
 
-% validate inputs
+% parse and validate inputs
 try
     disable_gui(handles);
     validate_inputs;
@@ -282,7 +282,7 @@ function batch_run_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% validate inputs
+% parse and validate inputs
 try
     disable_gui(handles);
     validate_inputs;
@@ -407,3 +407,13 @@ function update_CreateFcn(hObject, eventdata, handles)
 % hObject    handle to update (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
+
+
+
+function update_Callback(hObject, eventdata, handles)
+% hObject    handle to update (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of update as text
+%        str2double(get(hObject,'String')) returns contents of update as a double
