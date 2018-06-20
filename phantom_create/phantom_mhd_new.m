@@ -21,7 +21,7 @@ switch type
         end
         if max(phantom_extent)>matrix_size/2
             error('phantom too big for matrix')
-        elseif max(abs(offcenter) + phantom_extent)>matrix_size
+        elseif max(abs(offcenter) + phantom_extent)>matrix_size/2
             error('phantom too far offcenter')
         else
             phan = zeros(matrix_size,matrix_size,matrix_size);
@@ -45,18 +45,18 @@ switch type
             intensity = 1;
         end
         if phantom_extent>matrix_size/2
-            disp('phantom too big for matrix')
-        elseif max(abs(offcenter) + phantom_extent)>matrix_size
-            disp('phantom too far offcenter')
+            error('phantom too big for matrix')
+        elseif max(abs(offcenter) + phantom_extent)>matrix_size/2
+            error('phantom too far offcenter')
         else
             phan = zeros(matrix_size,matrix_size,matrix_size);
 
             for x = 1:matrix_size
                 for y = 1:matrix_size
                     for z = 1:matrix_size
-                        if (((matrix_size/2+.5-x-offcenter(1))/phantom_extent(1))^2+...
-                            ((matrix_size/2+.5-y-offcenter(2))/phantom_extent(2))^2+...
-                            ((matrix_size/2+.5-z-offcenter(3))/phantom_extent(3))^2)<1
+                        if (((matrix_size/2+.5-x+offcenter(1))/phantom_extent(1))^2+...
+                            ((matrix_size/2+.5-y+offcenter(2))/phantom_extent(2))^2+...
+                            ((matrix_size/2+.5-z+offcenter(3))/phantom_extent(3))^2)<1
                                 phan(x,y,z)=1;
                         else
                         end

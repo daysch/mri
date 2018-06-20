@@ -13,7 +13,7 @@ function radial_recon_rs2d_20180314_two_grads(handles)
         drawnow;
     end
     
-    % Choose file, if called from command line. Otherwise, use provided
+    % Choose file, if called without arguments. Otherwise, use provided
     % data path
     if nargin == 0
         data_path = uigetdir('../');
@@ -69,7 +69,7 @@ function radial_recon_rs2d_20180314_two_grads(handles)
     legend('real','imag','mag')
     xlabel('point number')
     
-    % load values from GUI/ask user for input
+    % load values from handles/ask user for input
     if nargin == 0
         commandwindow;
         % npts_filtered = 2^6;
@@ -275,7 +275,7 @@ function radial_recon_rs2d_20180314_two_grads(handles)
         add_string_gui(handles, 'Plotting results .... ');
     end
 
-    imshow3Dfull(abs(recon_final));
+    figure; imshow3Dfull(abs(recon_final));
     
     disp('Done.')
     if nargin == 1

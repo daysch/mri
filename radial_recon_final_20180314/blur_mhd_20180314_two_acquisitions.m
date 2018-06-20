@@ -10,32 +10,32 @@ function k_phantom_blurred = blur_mhd_20180314_two_acquisitions(recon_matrix_siz
 
     nmeas = length(x_grad);
     
-    %% parallel programming for speed. Splitting into six (the number of cores in the lab machine)
-    NUM_CORES = 6;
+    %% parallel programming for speed. Splitting into number of cores on machine
+    num_cores= feature('numcores');
     
     % divide job
-    start_pos = floor(linspace(1, nmeas, NUM_CORES + 1));
+    start_pos = floor(linspace(1, nmeas, num_cores + 1));
     start_pos = start_pos(1:end-1);
     end_pos = [(start_pos(2:end) - 1) nmeas];
     
     % submit jobs to (current or new) parallel pool
     p = gcp('nocreate');
     if isempty(p)
-        p = parpool([1 NUM_CORES]);
+        p = parpool([1 num_cores]);
     end
-    for ii = 1:NUM_CORES
+    for ii = 1:p.NumWorkers
         jobs(ii) = parfeval(p, @blur_portion, 1, start_pos(ii), end_pos(ii), recon_matrix_size, nsample, data_in, x_grad, y_grad, z_grad);
     end
 
     % Collect the results as they become available.
-    matrices = cell(1,NUM_CORES);
-    for ii = 1:NUM_CORES
+    matrices = cell(1,p.NumWorkers);
+    for ii = 1:p.NumWorkers
       [~,value] = fetchNext(jobs);
       matrices{ii} = value;
     end
     
     % calculate total
-    for ii = 1:NUM_CORES
+    for ii = 1:p.NumWorkers
         k_phantom_blurred = k_phantom_blurred + matrices{ii};
     end
 end
@@ -46,7 +46,6 @@ function k_phantom_blurred = blur_portion(start, last, recon_matrix_size, nsampl
     x_k_rect = -recon_matrix_size/2:recon_matrix_size/2-1;
     y_k_rect = -recon_matrix_size/2:recon_matrix_size/2-1;
     z_k_rect = -recon_matrix_size/2:recon_matrix_size/2-1;
-    nmeas = length(x_grad);
 
     %%
     grad_amp_large = sqrt(x_grad(1)^2+z_grad(1)^2+y_grad(1)^2); % finds the amplitude of the main gradient
