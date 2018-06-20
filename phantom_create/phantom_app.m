@@ -22,7 +22,7 @@ function varargout = phantom_app(varargin)
 
 % Edit the above text to modify the response to help phantom_app
 
-% Last Modified by GUIDE v2.5 19-Jun-2018 16:37:54
+% Last Modified by GUIDE v2.5 20-Jun-2018 09:45:45
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -58,8 +58,10 @@ handles.output = hObject;
 % set up constants
 handles.matrix_size = 64;
 
-% set up variables
+% set up variables/gui
 handles.real_phans = {};
+set(handles.remove, 'enable', 'off');
+set(handles.phan_list, 'enable', 'off');
 
 % Update handles structure
 guidata(hObject, handles);
@@ -102,19 +104,19 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
-% --- Executes on selection change in phan_shape.
-function phan_shape_Callback(hObject, eventdata, handles)
-% hObject    handle to phan_shape (see GCBO)
+% --- Executes on selection change in phan_type.
+function phan_type_Callback(hObject, eventdata, handles)
+% hObject    handle to phan_type (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: contents = cellstr(get(hObject,'String')) returns phan_shape contents as cell array
-%        contents{get(hObject,'Value')} returns selected item from phan_shape
+% Hints: contents = cellstr(get(hObject,'String')) returns phan_type contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from phan_type
 
 
 % --- Executes during object creation, after setting all properties.
-function phan_shape_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to phan_shape (see GCBO)
+function phan_type_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to phan_type (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -299,12 +301,17 @@ function add_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
+% only allow one process at a time, to avoid race conditions
+set(handles.generate, 'enable', 'off');
+set(handles.add, 'enable', 'off');
+set(handles.remove, 'enable', 'off');
+
 % validate inputs
 try
-    set(handles.generate, 'enable', 'on');
     validate_inputs;
 catch M
-    set(handles.generate, 'enable', 'off');
+    set(handles.generate, 'enable', 'on');
+    set(handles.add, 'enable', 'on');
     switch M.message
         case 'known error'
             return;
@@ -316,19 +323,32 @@ end
 % select shape type
 switch get(handles.phan_type, 'Value')
     case 1
-        handles.phan_type_val = 'ellipsoid';
+        phan_type_val = 'ellipsoidal';
     case 2
-        handles.phan_type_val = 'rectangular';
+        phan_type_val = 'rectangular';
 end
 
-% generate matrix
-new_phan = phantom_mhd_new(handles.matrix_size, handles.phan_type_val, ...
-                           handles.phan_extent_val, handles.phan_offset_val, ...
-                           handles.intensity_val);
+% generate phantom matrix
+new_phan = phantom_mhd_new(handles.matrix_size, phan_type_val, phan_extent_val, ...
+                           phan_offset_val, intensity_val);
 
-% save matrix                       
+% save phantom matrix
 handles.real_phans = [handles.real_phans; new_phan];
+old_list = get(handles.phan_list, 'String');
+if old_list(1) == ' '
+    old_list = old_list(2:end); % deletes blank line (if this is the first shape)
+end
+addition = string(sprintf('ellipsoidal_OO=[%d %d %d]_E=[%d %d %d]_I=%d', ...
+                          handles.phan_offset_val, handles.phan_extent_val, ...
+                          handles.intensity_val));
+set(handles.phan_list, 'String', [old_list;addition]);
 guidata(hObject, handles);
+
+% clean up
+set(handles.generate, 'enable', 'on');
+set(handles.remove, 'enable', 'on');
+set(handles.add, 'enable', 'on');
+
 
 
 function update_Callback(hObject, eventdata, handles)
@@ -361,19 +381,19 @@ function debug_Callback(hObject, eventdata, handles)
 keyboard;
 
 
-% --- Executes on selection change in popupmenu2.
-function popupmenu2_Callback(hObject, eventdata, handles)
-% hObject    handle to popupmenu2 (see GCBO)
+% --- Executes on selection change in phan_list.
+function phan_list_Callback(hObject, eventdata, handles)
+% hObject    handle to phan_list (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: contents = cellstr(get(hObject,'String')) returns popupmenu2 contents as cell array
-%        contents{get(hObject,'Value')} returns selected item from popupmenu2
+% Hints: contents = cellstr(get(hObject,'String')) returns phan_list contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from phan_list
 
 
 % --- Executes during object creation, after setting all properties.
-function popupmenu2_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to popupmenu2 (see GCBO)
+function phan_list_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to phan_list (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -389,3 +409,16 @@ function remove_Callback(hObject, eventdata, handles)
 % hObject    handle to remove (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+
+% get gui data
+index = handles.phan_list.Value;
+old_list = handles.phan_list.String;
+
+% remove from internal list and gui list
+handles.real_phans
+
+if isempty(handles.real_phans)
+    set(handles.phan_list, 'String', ' ')
+end
+
+guidata(hObject, handles);
