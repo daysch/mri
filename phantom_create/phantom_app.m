@@ -61,7 +61,6 @@ handles.matrix_size = 64;
 % set up variables/gui
 handles.real_phans = {};
 set(handles.remove, 'enable', 'off');
-set(handles.phan_list, 'enable', 'off');
 
 % Update handles structure
 guidata(hObject, handles);
@@ -342,8 +341,7 @@ if old_list(1) == ' '
     old_list = old_list(2:end); % deletes blank line (if this is the first shape)
 end
 addition = string(sprintf('ellipsoidal_OO=[%d %d %d]_E=[%d %d %d]_I=%d', ...
-                          handles.phan_offset_val, handles.phan_extent_val, ...
-                          handles.intensity_val));
+                          phan_offset_val, phan_extent_val, intensity_val));
 set(handles.phan_list, 'String', [old_list;addition]);
 guidata(hObject, handles);
 
@@ -351,7 +349,6 @@ guidata(hObject, handles);
 set(handles.generate, 'enable', 'on');
 set(handles.remove, 'enable', 'on');
 set(handles.add, 'enable', 'on');
-
 
 
 function update_Callback(hObject, eventdata, handles)
@@ -422,7 +419,8 @@ set(handles.phan_list, 'String', [old_list(1:index-1); old_list(index+1:end)]);
 handles.real_phans = [handles.real_phans(1:index-1); handles.real_phans(index+1:end)];
 
 if isempty(handles.real_phans)
-    set(handles.phan_list, 'String', ' ')
+    set(handles.phan_list, 'String', ' ');
+    set(handles.remove, 'enable', 'off');
 end
 
 guidata(hObject, handles);
