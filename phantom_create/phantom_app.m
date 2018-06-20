@@ -312,6 +312,9 @@ try
 catch M
     set(handles.generate, 'enable', 'on');
     set(handles.add, 'enable', 'on');
+    if handles.phan_list.String ~= ' '
+        set(handles.remove, 'enable', 'on');
+    end
     switch M.message
         case 'known error'
             return;
@@ -415,7 +418,8 @@ index = handles.phan_list.Value;
 old_list = handles.phan_list.String;
 
 % remove from internal list and gui list
-handles.real_phans
+set(handles.phan_list, 'String', [old_list(1:index-1); old_list(index+1:end)]);
+handles.real_phans = [handles.real_phans(1:index-1); handles.real_phans(index+1:end)];
 
 if isempty(handles.real_phans)
     set(handles.phan_list, 'String', ' ')
