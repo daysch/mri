@@ -143,6 +143,7 @@ function radial_recon_rs2d_20180314_two_grads(handles)
     disp('Step 1. Filtering data .... ')
     if nargin == 1
         add_string_gui(handles, 'Step 1. Filtering data ....');
+        drawnow;
     end
     
     res = 56/64*npts; % I'm not sure what this does, but it is in the Chesler and Wu codes for the hanning filter

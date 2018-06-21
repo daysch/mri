@@ -1,8 +1,10 @@
 % This calculates a set of data for a known phantom. It takes in an MxNxO
-% matrix representing an image
+% matrix representing an image, a foldername, and the size of the matrix.
+% Optionally takes in handles, which couples with other functions to update
+% the gui.
 
 %%
-function rad_k_lines = pseudo_data_phantom(phan_true, foldername, recon_matrix_size)
+function rad_k_lines = pseudo_data_phantom(phan_true, foldername, recon_matrix_size, handles)
     try
         load workspace;
     catch
@@ -43,6 +45,9 @@ function rad_k_lines = pseudo_data_phantom(phan_true, foldername, recon_matrix_s
 
     %% k-space pseudo-data generation
     disp('Generating data .... ')
+    if nargin == 4
+        add_string_gui(handles, 'Generating data .... ');
+    end
     tic;
     switch data_gen_method
         case 'big_phantom'
@@ -65,9 +70,15 @@ function rad_k_lines = pseudo_data_phantom(phan_true, foldername, recon_matrix_s
 
     % sample model k-space in radial fashion
     toc;
+    if nargin == 4
+        update_gui_time(handles);
+    end
 
     %%
     disp('Interpolating data .... ')
+    if nargin == 4
+        add_string_gui(handles, 'Interpolating data .... ');
+    end
     
     tic;
     grad_amp_big = sqrt(x_grad(2)^2+z_grad(2)^2+y_grad(2)^2);
@@ -76,6 +87,9 @@ function rad_k_lines = pseudo_data_phantom(phan_true, foldername, recon_matrix_s
     z_proj_k = z_grad/grad_amp_big*z_k_datagen;
     rad_k_lines = interp3(x_k_datagen,y_k_datagen,z_k_datagen, phan_k_datagen,x_proj_k,y_proj_k,z_proj_k, 'linear');
     toc;
+    if nargin == 4
+        update_gui_time(handles);
+    end
     
     rad_k_lines = rad_k_lines(:, nsample+1:end); % collect only half of the radial lines in k-space starting at the zero of k-space and moving outward
 
