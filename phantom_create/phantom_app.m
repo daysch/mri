@@ -22,7 +22,7 @@ function varargout = phantom_app(varargin)
 
 % Edit the above text to modify the response to help phantom_app
 
-% Last Modified by GUIDE v2.5 20-Jun-2018 16:46:10
+% Last Modified by GUIDE v2.5 21-Jun-2018 00:03:33
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -319,6 +319,10 @@ phan_true = sum(phan_true, 4);
 
 try
     pseudo_data_phantom(phan_true, folder, handles.recon_matrix_size);
+    if get(handles.disp_phan, 'Value') 
+        addpath(['..' filesep '3D Viewers' filesep 'vi']); 
+        figure; vi(abs(phan_true), 'aspect', [5 5 5]);
+    end
 catch
     errordlg('unable to generate phantom');
 end
@@ -453,3 +457,12 @@ if isempty(handles.real_phans)
 end
 
 guidata(hObject, handles);
+
+
+% --- Executes on button press in disp_phan.
+function disp_phan_Callback(hObject, eventdata, handles)
+% hObject    handle to disp_phan (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of disp_phan
