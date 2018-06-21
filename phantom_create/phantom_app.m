@@ -56,7 +56,7 @@ function phantom_app_OpeningFcn(hObject, eventdata, handles, varargin)
 handles.output = hObject;
 
 % set up constants
-handles.matrix_size = 64;
+handles.recon_matrix_size = 64;
 
 % set up variables/gui
 handles.real_phans = {};
@@ -293,6 +293,37 @@ function generate_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
+pause_gui;
+
+folder = get(handles.folder_name, 'String');
+
+% validate folder name
+if isempty(folder)
+    errordlg('please specify name to save as');
+    unpause_gui;
+    return;
+end
+if exist(['..' filesep 'phantom_objects' filesep folder], 'dir')
+    answer = questdlg('Overwrite phantom?', 'A phantom with that name already exists. Overwrite phantom?', ...
+                      'Overwrite', 'Cancel', 'Cancel');
+    switch answer
+        case 'Cancel'
+            unpause_gui;
+            return;
+    end
+end
+
+% sum up phantoms
+phan_true=cat(4, handles.real_phans{:});
+phan_true = sum(phan_true, 4);
+
+try
+    pseudo_data_phantom(phan_true, folder, handles.recon_matrix_size);
+catch
+    errordlg('unable to generate phantom');
+end
+unpause_gui;
+
 
 % --- Executes on button press in add.
 function add_Callback(hObject, eventdata, handles)
@@ -301,19 +332,13 @@ function add_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % only allow one process at a time, to avoid race conditions
-set(handles.generate, 'enable', 'off');
-set(handles.add, 'enable', 'off');
-set(handles.remove, 'enable', 'off');
+pause_gui;
 
 % validate inputs
 try
     validate_inputs;
 catch M
-    set(handles.generate, 'enable', 'on');
-    set(handles.add, 'enable', 'on');
-    if handles.phan_list.String ~= ' '
-        set(handles.remove, 'enable', 'on');
-    end
+    unpause_gui;
     switch M.message
         case 'known error'
             return;
@@ -331,24 +356,25 @@ switch get(handles.phan_type, 'Value')
 end
 
 % generate phantom matrix
-new_phan = phantom_mhd_new(handles.matrix_size, phan_type_val, phan_extent_val, ...
+new_phan = phantom_mhd_new(handles.recon_matrix_size, phan_type_val, phan_extent_val, ...
                            phan_offset_val, intensity_val);
 
 % save phantom matrix
-handles.real_phans = [handles.real_phans; new_phan];
 old_list = get(handles.phan_list, 'String');
-if old_list(1) == ' '
-    old_list = old_list(2:end); % deletes blank line (if this is the first shape)
-end
 addition = string(sprintf('ellipsoidal_OO=[%d %d %d]_E=[%d %d %d]_I=%d', ...
                           phan_offset_val, phan_extent_val, intensity_val));
-set(handles.phan_list, 'String', [old_list;addition]);
+                      
+if isequal(old_list(1), ' ')
+    set(handles.phan_list, 'String', addition);
+    handles.real_phans = {new_phan};
+else
+    set(handles.phan_list, 'String', [old_list;addition]);
+    handles.real_phans = [handles.real_phans; new_phan];
+end
 guidata(hObject, handles);
 
 % clean up
-set(handles.generate, 'enable', 'on');
-set(handles.remove, 'enable', 'on');
-set(handles.add, 'enable', 'on');
+unpause_gui;
 
 
 function update_Callback(hObject, eventdata, handles)
@@ -417,6 +443,9 @@ old_list = handles.phan_list.String;
 % remove from internal list and gui list
 set(handles.phan_list, 'String', [old_list(1:index-1); old_list(index+1:end)]);
 handles.real_phans = [handles.real_phans(1:index-1); handles.real_phans(index+1:end)];
+
+% move menu back to top
+set(handles.phan_list, 'Value', 1)
 
 if isempty(handles.real_phans)
     set(handles.phan_list, 'String', ' ');

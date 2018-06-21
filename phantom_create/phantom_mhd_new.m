@@ -58,7 +58,6 @@ switch type
                             ((matrix_size/2+.5-y+offcenter(2))/phantom_extent(2))^2+...
                             ((matrix_size/2+.5-z+offcenter(3))/phantom_extent(3))^2)<1
                                 phan(x,y,z)=1;
-                        else
                         end
                     end
                 end

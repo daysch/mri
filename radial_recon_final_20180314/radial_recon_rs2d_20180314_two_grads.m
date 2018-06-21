@@ -317,7 +317,7 @@ function radial_recon_rs2d_20180314_two_grads(handles)
     end
 
     % save values to file for phantom to potentially use
-    save([fileparts(fileparts(mfilename('fullpath'))) filesep 'phantom_create' filesep 'workspace'], ... 
+    save(['..' filesep 'phantom_create' filesep 'workspace'], ... 
         'npts', 'nspokes', 'data_grads_full', 'x_grad', 'y_grad', 'z_grad');
     
 end

@@ -1,10 +1,8 @@
-% This calculates a set of data for a known phantom. It takes in variable:
-% handles, a structure which must contain nsamples, phan_extent_val (vector with [x y z] values),
-% phan_offset_val (vector with [x y z] values), x_grad, y_grad, z_grad,
-% phan_shape_val, and intensity_val
+% This calculates a set of data for a known phantom. It takes in an MxNxO
+% matrix representing an image
 
 %%
-function rad_k_lines = pseudo_data_phantom(handles)
+function rad_k_lines = pseudo_data_phantom(phan_true, foldername, recon_matrix_size)
     try
         load workspace;
     catch
@@ -12,20 +10,10 @@ function rad_k_lines = pseudo_data_phantom(handles)
     end
     
     % declare some constants
-    recon_matrix_size = 2^6; % currently fixed
-    nsample = handles.nsample; %2^7 max if using 'big_phantom';
+    nsample = 2^6; %2^7 max if using 'big_phantom';
     phantom_matrix_size = 2*nsample; %max 2^8
     % nsample = 2^6; %2^10;
-    
-    % gather variables from handles
-    phan_extent = handles.phan_extent_val;
-    phan_offset = handles.phan_offset_val;
-    phan_shape = handles.phan_shape_val; %'ellipsoidal', 'rectangular
-    intensity = handles.intensity_val;
-    x_grad = handles.x_grad;
-    y_grad = handles.y_grad;
-    z_grad = handles. z_grad;
-    
+        
     % grad_amp_big = 2;
     % grad_amp_this = 100;
     % nrings1 = 51;
@@ -42,7 +30,6 @@ function rad_k_lines = pseudo_data_phantom(handles)
     % phase behavior but may not be great for a heavily varying sample.
 
     data_gen_method = 'interp_true'; % 'big_phantom'  or 'interp_true'
-    phan_true = phantom_mhd_new(recon_matrix_size,phan_shape, phan_extent, phan_offset, intensity);
     phan_k_true = ifftshift(ifftn(ifftshift(phan_true)));
     phan_recon1_true = fftshift(fftn(fftshift(phan_k_true)));
    
@@ -92,11 +79,11 @@ function rad_k_lines = pseudo_data_phantom(handles)
     
     rad_k_lines = rad_k_lines(:, nsample+1:end); % collect only half of the radial lines in k-space starting at the zero of k-space and moving outward
 
-    %% prep for saving
-    %npts = nsample;
-    
-    % save phantom object to file
-%     mkdir([fileparts(fileparts(mfilename('fullpath'))) filesep 'phantom_objects' filesep 'unique_id_goes_here']);
-%     save([fileparts(fileparts(mfilename('fullpath'))) filesep 'phantom_objects' filesep 'unique_id_goes_here' filesep 'parsed_data'], ... 
-%         'npts', 'nspokes', 'data_grads_full', 'x_grad', 'y_grad', 'z_grad');
-%     save([fileparts(fileparts(mfilename('fullpath'))) filesep 'phantom_objects' filesep 'unique_id_goes_here' filesep 'phan_true'], 'phan_true');
+npts = nsample;
+data_grads_full = rad_k_lines;
+
+% save phantom object to file
+mkdir(['..' filesep 'phantom_objects' filesep foldername]);
+save(['..' filesep 'phantom_objects' filesep foldername filesep 'parsed_data'], ...
+    'npts', 'nspokes', 'data_grads_full', 'x_grad', 'y_grad', 'z_grad');
+save(['..' filesep 'phantom_objects' filesep foldername filesep 'phan_true'], 'phan_true');
