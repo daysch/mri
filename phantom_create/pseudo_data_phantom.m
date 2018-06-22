@@ -97,7 +97,7 @@ npts = nsample;
 data_grads_full = rad_k_lines;
 
 % save phantom object to file
-mkdir(['..' filesep 'phantom_objects' filesep foldername]);
-save(['..' filesep 'phantom_objects' filesep foldername filesep 'parsed_data'], ...
+mkdir([fileparts(fileparts(mfilename('fullpath'))) filesep 'phantom_objects' filesep foldername]);
+save([fileparts(fileparts(mfilename('fullpath'))) filesep 'phantom_objects' filesep foldername filesep 'parsed_data'], ...
     'npts', 'nspokes', 'data_grads_full', 'x_grad', 'y_grad', 'z_grad');
-save(['..' filesep 'phantom_objects' filesep foldername filesep 'phan_true'], 'phan_true');
+save([fileparts(fileparts(mfilename('fullpath'))) filesep 'phantom_objects' filesep foldername filesep 'phan_true'], 'phan_true');

@@ -1,4 +1,10 @@
-% Runs the radial reconstruction on a data set of your choosing
+% Runs the radial reconstruction on a data set of your choosing. Can be
+% called either from the command line, or as a function with a s ingle
+% argument, handles, which is a struct with fields: data_path (path to data
+% set), update (a GUIDE static text box), prepts_val (point at zero of
+% time), firstpt_val (first usable point of data), numpts_val (either NaN
+% or the number of points to use), and recon_matrix_size_val (the size of
+% the matrix to be made).
 function radial_recon_rs2d_20180314_two_grads(handles)
     if nargin == 0
         clear % clears the workspace when called from the command line without arguments
@@ -8,7 +14,7 @@ function radial_recon_rs2d_20180314_two_grads(handles)
 
     % close all % closes all open figures
     disp('Importing data .... ')
-    if nargin == 1    % to GUI
+    if nargin == 1    % send update to GUI
         add_string_gui(handles, [newline 'Importing data .... ']);
         drawnow;
     end
@@ -16,7 +22,7 @@ function radial_recon_rs2d_20180314_two_grads(handles)
     % Choose file, if called without arguments. Otherwise, use provided
     % data path
     if nargin == 0
-        data_path = uigetdir('../');
+        data_path = uigetdir(['..' filesep]);
     else
         data_path = handles.data_path;
     end
@@ -277,31 +283,17 @@ function radial_recon_rs2d_20180314_two_grads(handles)
     end
 
     figure; imshow3Dfull(abs(recon_final));
-    %figure; addpath(['..' filesep '3D Viewers' filesep 'vi']); vi(abs(recon_final), 'aspect', [5 5 5]);
+    %figure; addpath([fileparts(fileparts(mfilename('fullpath'))) filesep '3D Viewers' filesep 'vi']); vi(abs(recon_final), 'aspect', [5 5 5]);
     
     disp('Done.')
     if nargin == 1
         add_string_gui(handles, 'Done. ');
     end
-    %% Optional plotting for more slices.
-%{
-    coloraxis = [0 max(max(max(abs(recon_final))))];
 
-    for n = 8:2:56
-        figure(1000+n); pcolor(squeeze(abs(recon_final(:,n,:)))); shading flat; colormap('gray'); title(['coronal slice ' num2str(n)]); caxis(coloraxis)
-    end
-    for n = 8:2:56
-        figure(1100+n); pcolor(squeeze(abs(recon_final(:,:,n)))); shading flat; colormap('gray'); title(['axial slice ' num2str(n)]); caxis(coloraxis)
-    end
-    for n = 8:2:56
-        figure(1200+n); pcolor(squeeze(abs(recon_final(n,:,:)))); shading flat; colormap('gray'); title(['sagittal slice ' num2str(n)]); caxis(coloraxis)
-    end
- %}
     %% Save log to CSV, when called from GUI
     if nargin == 1
-        addpath(fileparts(fileparts(mfilename)));
-        if ~exist('log.csv', 'file')
-            fileid = fopen([fileparts(fileparts(mfilename('fullpath'))) filesep 'log.csv'], 'wt');
+        if ~exist([fileparts(fileparts(mfilename('fullpath'))) filesep 'log.csv'], 'file')
+            fileid = fopen(['..' filesep 'log.csv'], 'wt');
             if fileid < 0
                 error('log cannot be saved');
             end
@@ -318,7 +310,7 @@ function radial_recon_rs2d_20180314_two_grads(handles)
     end
 
     % save values to file for phantom to potentially use
-    save(['..' filesep 'phantom_create' filesep 'workspace'], ... 
+    save([fileparts(fileparts(mfilename('fullpath'))) filesep 'phantom_create' filesep 'workspace'], ... 
         'npts', 'nspokes', 'data_grads_full', 'x_grad', 'y_grad', 'z_grad');
     
 end
