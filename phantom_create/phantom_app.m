@@ -22,7 +22,7 @@ function varargout = phantom_app(varargin)
 
 % Edit the above text to modify the response to help phantom_app
 
-% Last Modified by GUIDE v2.5 22-Jun-2018 12:15:58
+% Last Modified by GUIDE v2.5 22-Jun-2018 12:47:46
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -220,8 +220,8 @@ set(handles.phan_list, 'Value', 1)
 % deal with empty phantom
 if isempty(handles.real_phans)
     set(handles.phan_list, 'String', ' ');
-    set(handles.remove, 'enable', 'off');
-    set(handles.generate, 'enable', 'off');
+    pause_gui;
+    unpause_gui;
 end
 
 % gui update box
@@ -243,6 +243,16 @@ set(handles.update, 'String', string(''));
 % https://www.mathworks.com/matlabcentral/answers/1450-gui-for-keyboard-pressed-representing-the-push-button
 
 % --- Executes on key press with focus on x_offset and none of its controls.
+% --- Executes on key press with focus on phan_type and none of its controls.
+function phan_type_KeyPressFcn(hObject, eventdata, handles)
+% hObject    handle to phan_type (see GCBO)
+% eventdata  structure with the following fields (see MATLAB.UI.CONTROL.UICONTROL)
+%	Key: name of the key that was pressed, in lower case
+%	Character: character interpretation of the key(s) that was pressed
+%	Modifier: name(s) of the modifier key(s) (i.e., control, shift) pressed
+% handles    structure with handles and user data (see GUIDATA)
+return_press_do(hObject, eventdata, handles, handles.add, @add_Callback);
+
 function x_offset_KeyPressFcn(hObject, eventdata, handles)
 % hObject    handle to x_offset (see GCBO)
 % eventdata  structure with the following fields (see MATLAB.UI.CONTROL.UICONTROL)
@@ -321,6 +331,67 @@ function add_KeyPressFcn(hObject, eventdata, handles)
 %	Modifier: name(s) of the modifier key(s) (i.e., control, shift) pressed
 % handles    structure with handles and user data (see GUIDATA)
 return_press_do(hObject, eventdata, handles, handles.add, @add_Callback);
+uicontrol(handles.add);
+
+% --- Executes on key press with focus on phan_list and none of its controls.
+function phan_list_KeyPressFcn(hObject, eventdata, handles)
+% hObject    handle to phan_list (see GCBO)
+% eventdata  structure with the following fields (see MATLAB.UI.CONTROL.UICONTROL)
+%	Key: name of the key that was pressed, in lower case
+%	Character: character interpretation of the key(s) that was pressed
+%	Modifier: name(s) of the modifier key(s) (i.e., control, shift) pressed
+% handles    structure with handles and user data (see GUIDATA)
+return_press_do(hObject, eventdata, handles, handles.remove, @remove_Callback);
+
+% --- Executes on key press with focus on remove and none of its controls.
+function remove_KeyPressFcn(hObject, eventdata, handles)
+% hObject    handle to remove (see GCBO)
+% eventdata  structure with the following fields (see MATLAB.UI.CONTROL.UICONTROL)
+%	Key: name of the key that was pressed, in lower case
+%	Character: character interpretation of the key(s) that was pressed
+%	Modifier: name(s) of the modifier key(s) (i.e., control, shift) pressed
+% handles    structure with handles and user data (see GUIDATA)
+return_press_do(hObject, eventdata, handles, handles.remove, @remove_Callback);
+
+% --- Executes on key press with focus on clear and none of its controls.
+function clear_KeyPressFcn(hObject, eventdata, handles)
+% hObject    handle to clear (see GCBO)
+% eventdata  structure with the following fields (see MATLAB.UI.CONTROL.UICONTROL)
+%	Key: name of the key that was pressed, in lower case
+%	Character: character interpretation of the key(s) that was pressed
+%	Modifier: name(s) of the modifier key(s) (i.e., control, shift) pressed
+% handles    structure with handles and user data (see GUIDATA)
+return_press_do(hObject, eventdata, handles, handles.clear, @clear_Callback);
+
+% --- Executes on key press with focus on folder_name and none of its controls.
+function folder_name_KeyPressFcn(hObject, eventdata, handles)
+% hObject    handle to folder_name (see GCBO)
+% eventdata  structure with the following fields (see MATLAB.UI.CONTROL.UICONTROL)
+%	Key: name of the key that was pressed, in lower case
+%	Character: character interpretation of the key(s) that was pressed
+%	Modifier: name(s) of the modifier key(s) (i.e., control, shift) pressed
+% handles    structure with handles and user data (see GUIDATA)
+return_press_do(hObject, eventdata, handles, handles.generate, @generate_Callback);
+
+% --- Executes on key press with focus on generate and none of its controls.
+function generate_KeyPressFcn(hObject, eventdata, handles)
+% hObject    handle to generate (see GCBO)
+% eventdata  structure with the following fields (see MATLAB.UI.CONTROL.UICONTROL)
+%	Key: name of the key that was pressed, in lower case
+%	Character: character interpretation of the key(s) that was pressed
+%	Modifier: name(s) of the modifier key(s) (i.e., control, shift) pressed
+% handles    structure with handles and user data (see GUIDATA)
+return_press_do(hObject, eventdata, handles, handles.generate, @generate_Callback);
+
+% --- Executes on key press with focus on clear_updates and none of its controls.
+function clear_updates_KeyPressFcn(hObject, eventdata, handles)
+% hObject    handle to clear_updates (see GCBO)
+% eventdata  structure with the following fields (see MATLAB.UI.CONTROL.UICONTROL)
+%	Key: name of the key that was pressed, in lower case
+%	Character: character interpretation of the key(s) that was pressed
+%	Modifier: name(s) of the modifier key(s) (i.e., control, shift) pressed
+% handles    structure with handles and user data (see GUIDATA)
+return_press_do(hObject, eventdata, handles, handles.clear_updates, @clear_updates_Callback);
 
 
 %% allows for debugging with variables in scope
