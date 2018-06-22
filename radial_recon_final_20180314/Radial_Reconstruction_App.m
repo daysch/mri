@@ -22,7 +22,7 @@ function varargout = Radial_Reconstruction_App(varargin)
 
 % Edit the above text to modify the response to help Radial_Reconstruction_App
 
-% Last Modified by GUIDE v2.5 22-Jun-2018 14:52:50
+% Last Modified by GUIDE v2.5 22-Jun-2018 14:54:06
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -419,3 +419,14 @@ function recon_matrix_size_KeyPressFcn(hObject, eventdata, handles)
 %	Modifier: name(s) of the modifier key(s) (i.e., control, shift) pressed
 % handles    structure with handles and user data (see GUIDATA)
 return_press_do(hObject, eventdata, handles, handles.run, @run_Callback);
+
+
+% --- Executes on key press with focus on choose_file and none of its controls.
+function choose_file_KeyPressFcn(hObject, eventdata, handles)
+% hObject    handle to choose_file (see GCBO)
+% eventdata  structure with the following fields (see MATLAB.UI.CONTROL.UICONTROL)
+%	Key: name of the key that was pressed, in lower case
+%	Character: character interpretation of the key(s) that was pressed
+%	Modifier: name(s) of the modifier key(s) (i.e., control, shift) pressed
+% handles    structure with handles and user data (see GUIDATA)
+return_press_do(hObject, eventdata, handles, handles.choose_file, @choose_file_Callback);

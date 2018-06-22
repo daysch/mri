@@ -4,7 +4,7 @@
 % AND (potentially) UPDATE THE WAY THOSE FILES ARE GENERATED (below)
 
 
-function k_phantom_blurred = blur_mhd_20180314_two_acquisitions(recon_matrix_size, nsample, data_in, x_grad, y_grad, z_grad)
+function k_phantom_blurred = blur_mhd_20180314_two_acquisitions(recon_matrix_size, nsample, data_in, x_grad, y_grad, z_grad, handles)
     %% creates the coordinates onto which the measured data will be blurred.
     k_phantom_blurred = zeros(recon_matrix_size,recon_matrix_size,recon_matrix_size);
 
@@ -18,11 +18,16 @@ function k_phantom_blurred = blur_mhd_20180314_two_acquisitions(recon_matrix_siz
     start_pos = start_pos(1:end-1);
     end_pos = [(start_pos(2:end) - 1) nmeas];
     
-    % submit jobs to (current or new) parallel pool
+    
     p = gcp('nocreate');
+    % create parallel pool if needed
     if isempty(p)
+        if nargin == 7
+            add_string_gui(handles, 'Creating parallel pool. This may take a minute')
+        end
         p = parpool([1 num_cores]);
     end
+    % submt jobs to pool
     for ii = 1:p.NumWorkers
         jobs(ii) = parfeval(p, @blur_portion, 1, start_pos(ii), end_pos(ii), recon_matrix_size, nsample, data_in, x_grad, y_grad, z_grad);
     end
@@ -35,12 +40,11 @@ function k_phantom_blurred = blur_mhd_20180314_two_acquisitions(recon_matrix_siz
     end
     
     % calculate total
-    for ii = 1:p.NumWorkers
-        k_phantom_blurred = k_phantom_blurred + matrices{ii};
-    end
+    k_phantom_blurred = cat(4, matrices{:});
+    k_phantom_blurred = sum(k_phantom_blurred, 4);
 end
 
-%% actual processing loop
+%% actual processing function
 function k_phantom_blurred = blur_portion(start, last, recon_matrix_size, nsample, data_in, x_grad, y_grad, z_grad)
     % This creates the zero of k-space at (recon_matrix_size/2 + 1).
     x_k_rect = -recon_matrix_size/2:recon_matrix_size/2-1;
