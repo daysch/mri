@@ -22,7 +22,7 @@ function varargout = Radial_Reconstruction_App(varargin)
 
 % Edit the above text to modify the response to help Radial_Reconstruction_App
 
-% Last Modified by GUIDE v2.5 19-Jun-2018 16:38:30
+% Last Modified by GUIDE v2.5 22-Jun-2018 14:52:50
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -67,7 +67,7 @@ guidata(hObject, handles);
 clear;
 
 % UIWAIT makes Radial_Reconstruction_App wait for user response (see UIRESUME)
-% uiwait(handles.figure1);
+% uiwait(handles.Radial_Reconstruction_App);
 
 
 % --- Outputs from this function are returned to the command line.
@@ -170,9 +170,9 @@ function close_all_Callback(hObject, eventdata, handles)
 answer = questdlg('Close all figures?','Confirm Closing','Confirm','Cancel', 'Confirm');
 switch answer 
     case 'Confirm'
-        set(handles.figure1, 'HandleVisibility', 'off'); % keeps the gui from being closed
+        set(handles.Radial_Reconstruction_App, 'HandleVisibility', 'off'); % keeps the gui from being closed
         close all;
-        set(handles.figure1, 'HandleVisibility', 'on');
+        set(handles.Radial_Reconstruction_App, 'HandleVisibility', 'on');
         drawnow;
 end
 
@@ -244,28 +244,6 @@ handles.debug = ~get(hObject,'Value');
 guidata(hObject, handles);
 
 
-%% legacy code, due to MATLAB guide error
-function figure1_SizeChangedFcn(hObject, eventdata, handles)
-function recon_Callback(hObject, eventdata, handles)
-function phant_Callback(hObject, eventdata, handles)
-
-%% return key presses run button
-% --- Executes on key press with focus on figure1 or any of its controls.
-function figure1_WindowKeyPressFcn(hObject, eventdata, handles)
-% hObject    handle to figure1 (see GCBO)
-% eventdata  structure with the following fields (see MATLAB.UI.FIGURE)
-%	Key: name of the key that was pressed, in lower case
-%	Character: character interpretation of the key(s) that was pressed
-%	Modifier: name(s) of the modifier key(s) (i.e., control, shift) pressed
-% handles    structure with handles and user data (see GUIDATA)
-switch eventdata.Key
-    case 'return'
-        if get(handles.pause, 'userdata') == 0 % make sure we're not paused
-            uicontrol(handles.run); % need to deselect other fields so they can update
-            run_Callback(handles.run, eventdata, handles);
-        end
-end
-
 %% For debugging purposes
 % --- Executes on button press in pushbutton5.
 function pushbutton5_Callback(hObject, eventdata, handles)
@@ -312,7 +290,7 @@ for ii = 1:length(subFolders)
     % update handles
     handles = guidata(hObject);
     % bring gui to front
-    figure(handles.figure1);
+    figure(handles.Radial_Reconstruction_App);
     
     % pause if pause button has been pressed
     if get(handles.pause, 'userdata') == 1
@@ -352,7 +330,7 @@ end
 reset_gui(handles, hObject);
 handles.data_path = folder_path;
 guidata(hObject, handles);
-figure(handles.figure1);
+figure(handles.Radial_Reconstruction_App);
 
 %% Pauses/unpauses batch run
 % --- Executes on button press in pause.
@@ -401,18 +379,43 @@ add_string_gui(handles, [newline 'Canceling after current reconstruction ...' ne
 guidata(hObject, handles);
 
 
-% --- Executes during object creation, after setting all properties.
-function update_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to update (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-
-
-function update_Callback(hObject, eventdata, handles)
-% hObject    handle to update (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
+%% return key presses appropriate button
+% --- Executes on key press with focus on prepts and none of its controls.
+function prepts_KeyPressFcn(hObject, eventdata, handles)
+% hObject    handle to prepts (see GCBO)
+% eventdata  structure with the following fields (see MATLAB.UI.CONTROL.UICONTROL)
+%	Key: name of the key that was pressed, in lower case
+%	Character: character interpretation of the key(s) that was pressed
+%	Modifier: name(s) of the modifier key(s) (i.e., control, shift) pressed
 % handles    structure with handles and user data (see GUIDATA)
+return_press_do(hObject, eventdata, handles, handles.run, @run_Callback);
 
-% Hints: get(hObject,'String') returns contents of update as text
-%        str2double(get(hObject,'String')) returns contents of update as a double
+% --- Executes on key press with focus on firstpt and none of its controls.
+function firstpt_KeyPressFcn(hObject, eventdata, handles)
+% hObject    handle to firstpt (see GCBO)
+% eventdata  structure with the following fields (see MATLAB.UI.CONTROL.UICONTROL)
+%	Key: name of the key that was pressed, in lower case
+%	Character: character interpretation of the key(s) that was pressed
+%	Modifier: name(s) of the modifier key(s) (i.e., control, shift) pressed
+% handles    structure with handles and user data (see GUIDATA)
+return_press_do(hObject, eventdata, handles, handles.run, @run_Callback);
+
+% --- Executes on key press with focus on numpts and none of its controls.
+function numpts_KeyPressFcn(hObject, eventdata, handles)
+% hObject    handle to numpts (see GCBO)
+% eventdata  structure with the following fields (see MATLAB.UI.CONTROL.UICONTROL)
+%	Key: name of the key that was pressed, in lower case
+%	Character: character interpretation of the key(s) that was pressed
+%	Modifier: name(s) of the modifier key(s) (i.e., control, shift) pressed
+% handles    structure with handles and user data (see GUIDATA)
+return_press_do(hObject, eventdata, handles, handles.run, @run_Callback);
+
+% --- Executes on key press with focus on recon_matrix_size and none of its controls.
+function recon_matrix_size_KeyPressFcn(hObject, eventdata, handles)
+% hObject    handle to recon_matrix_size (see GCBO)
+% eventdata  structure with the following fields (see MATLAB.UI.CONTROL.UICONTROL)
+%	Key: name of the key that was pressed, in lower case
+%	Character: character interpretation of the key(s) that was pressed
+%	Modifier: name(s) of the modifier key(s) (i.e., control, shift) pressed
+% handles    structure with handles and user data (see GUIDATA)
+return_press_do(hObject, eventdata, handles, handles.run, @run_Callback);

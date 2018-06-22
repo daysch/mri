@@ -22,7 +22,7 @@ function varargout = phantom_app(varargin)
 
 % Edit the above text to modify the response to help phantom_app
 
-% Last Modified by GUIDE v2.5 22-Jun-2018 12:47:46
+% Last Modified by GUIDE v2.5 22-Jun-2018 14:45:31
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -65,7 +65,7 @@ handles.real_phans = {};
 guidata(hObject, handles);
 
 % UIWAIT makes phantom_app wait for user response (see UIRESUME)
-% uiwait(handles.figure1);
+% uiwait(handles.phantom_app);
 
 
 % --- Outputs from this function are returned to the command line.
@@ -79,7 +79,7 @@ function varargout = phantom_app_OutputFcn(hObject, eventdata, handles)
 varargout{1} = handles.output;
 
 
-%% generates the phantom data from the list of cartesian shapes
+%% generates the phantom data from the list of cartesian matrices of shapes
 % --- Executes on button press in generate.
 function generate_Callback(hObject, eventdata, handles)
 % hObject    handle to generate (see GCBO)
@@ -96,11 +96,12 @@ if isempty(folder)
     return;
 end
 if exist([fileparts(fileparts(mfilename('fullpath'))) filesep 'phantom_objects' filesep folder], 'dir')
-    answer = questdlg('Overwrite phantom?', 'A phantom with that name already exists. Overwrite phantom?', ...
-                      'Overwrite', 'Cancel', 'Cancel');
+    answer = questdlg('A phantom with that name already exists. Overwrite phantom?', ...
+                      'Overwrite phantom?', 'Overwrite', 'Cancel', 'Cancel');
     switch answer
         case 'Cancel'
             unpause_gui;
+            uicontrol(handles.folder_name);
             return;
     end
 end
