@@ -213,12 +213,14 @@ for ii = 1:length(subFolders)
         set(handles.pause, 'enable', 'on');
         set(handles.pause, 'String', 'Continue');
         add_string_gui(handles, [newline 'paused']);
+        uicontrol(handles.pause);
         while ~handles.continue
             % quit, if selected
             if handles.quit_batch
                 % reset everything and quit
                 reset_gui(handles, hObject);
                 handles.data_path = folder_path;
+                handles.quit_batch = false;
                 guidata(hObject, handles);
                 add_string_gui(handles, 'Batch job aborted');
                 return;
@@ -279,6 +281,7 @@ else
     set(handles.pause, 'String', 'Pause batch job');
     set(handles.pause, 'enable', 'on');
     set(handles.cancel_batch, 'visible', 'off');
+    uicontrol(handles.Radial_Reconstruction_App);
 end
 
 %% cancels a batch run
