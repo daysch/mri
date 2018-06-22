@@ -60,7 +60,6 @@ handles.recon_matrix_size = 64;
 
 % set up variables/gui
 handles.real_phans = {};
-set(handles.remove, 'enable', 'off');
 
 % Update handles structure
 guidata(hObject, handles);
@@ -79,6 +78,8 @@ function varargout = phantom_app_OutputFcn(hObject, eventdata, handles)
 % Get default command line output from handles structure
 varargout{1} = handles.output;
 
+
+%% generates the phantom data from the list of cartesian shapes
 % --- Executes on button press in generate.
 function generate_Callback(hObject, eventdata, handles)
 % hObject    handle to generate (see GCBO)
@@ -108,9 +109,11 @@ end
 phan_true=cat(4, handles.real_phans{:});
 phan_true = sum(phan_true, 4);
 
+% generate phantom
 add_string_gui(handles, [newline 'generating phantom...']);
 try
     pseudo_data_phantom(phan_true, folder, handles.recon_matrix_size, handles);
+    % display original phantom
     if get(handles.disp_phan, 'Value') 
         addpath([fileparts(fileparts(mfilename('fullpath'))) filesep '3D Viewers' filesep 'vi']); 
         vi(abs(phan_true), 'aspect', [5 5 5]);
@@ -124,6 +127,7 @@ end
 unpause_gui;
 
 
+%% validates and adds selected shape to list
 % --- Executes on button press in add.
 function add_Callback(hObject, eventdata, handles)
 % hObject    handle to add (see GCBO)
@@ -177,6 +181,7 @@ guidata(hObject, handles);
 unpause_gui;
 
 
+%% removes all shapes from list
 % --- Executes on button press in clear.
 function clear_Callback(hObject, eventdata, handles)
 % hObject    handle to clear (see GCBO)
@@ -188,27 +193,13 @@ switch answer
         handles.real_phans = {};
         set(handles.phan_list, 'String', ' ');
         set(handles.phan_list, 'Value', 1);
-        set(handles.remove, 'enable', 'off');
-        set(handles.generate, 'enable', 'off');
+        pause_gui;
+        unpause_gui;
         add_string_gui(handles, [newline newline newline 'cleared shapes' newline newline newline]);
 end
 
 
-% --- Executes on button press in clear_updates.
-function clear_updates_Callback(hObject, eventdata, handles)
-% hObject    handle to clear_updates (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-set(handles.update, 'String', string(''));
-
-% --- Executes on button press in debug.
-function debug_Callback(hObject, eventdata, handles)
-% hObject    handle to debug (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-keyboard;
-
-
+%% removes selected shape from list
 % --- Executes on button press in remove.
 function remove_Callback(hObject, eventdata, handles)
 % hObject    handle to remove (see GCBO)
@@ -239,19 +230,25 @@ add_string_gui(handles, [string('removed shape:'); old_list(index, :)]);
 guidata(hObject, handles);
 
 
-
-
-% --- Executes on selection change in phan_list.
-function phan_list_Callback(hObject, eventdata, handles)
-% hObject    handle to phan_list (see GCBO)
+%% clears update box
+% --- Executes on button press in clear_updates.
+function clear_updates_Callback(hObject, eventdata, handles)
+% hObject    handle to clear_updates (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-
-% Hints: contents = cellstr(get(hObject,'String')) returns phan_list contents as cell array
-%        contents{get(hObject,'Value')} returns selected item from phan_list
+set(handles.update, 'String', string(''));
 
 
+%% allows for debugging with variables in scope
+% --- Executes on button press in debug.
+function debug_Callback(hObject, eventdata, handles)
+% hObject    handle to debug (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+keyboard;
 
+
+%% assorted, basically unused, create functions
 % --- Executes during object creation, after setting all properties.
 function phan_list_CreateFcn(hObject, eventdata, handles)
 % hObject    handle to phan_list (see GCBO)
@@ -263,16 +260,6 @@ function phan_list_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
-
-
-
-% --- Executes on button press in disp_phan.
-function disp_phan_Callback(hObject, eventdata, handles)
-% hObject    handle to disp_phan (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hint: get(hObject,'Value') returns toggle state of disp_phan
 
 % --- Executes during object creation, after setting all properties.
 function phan_type_CreateFcn(hObject, eventdata, handles)
@@ -286,17 +273,6 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
     set(hObject,'BackgroundColor','white');
 end
 
-
-
-function y_extent_Callback(hObject, eventdata, handles)
-% hObject    handle to y_extent (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of y_extent as text
-%        str2double(get(hObject,'String')) returns contents of y_extent as a double
-
-
 % --- Executes during object creation, after setting all properties.
 function y_extent_CreateFcn(hObject, eventdata, handles)
 % hObject    handle to y_extent (see GCBO)
@@ -308,17 +284,6 @@ function y_extent_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
-
-
-
-function z_extent_Callback(hObject, eventdata, handles)
-% hObject    handle to z_extent (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of z_extent as text
-%        str2double(get(hObject,'String')) returns contents of z_extent as a double
-
 
 % --- Executes during object creation, after setting all properties.
 function z_extent_CreateFcn(hObject, eventdata, handles)
@@ -332,17 +297,6 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
     set(hObject,'BackgroundColor','white');
 end
 
-
-
-function x_extent_Callback(hObject, eventdata, handles)
-% hObject    handle to x_extent (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of x_extent as text
-%        str2double(get(hObject,'String')) returns contents of x_extent as a double
-
-
 % --- Executes during object creation, after setting all properties.
 function x_extent_CreateFcn(hObject, eventdata, handles)
 % hObject    handle to x_extent (see GCBO)
@@ -354,17 +308,6 @@ function x_extent_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
-
-
-
-function y_offset_Callback(hObject, eventdata, handles)
-% hObject    handle to y_offset (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of y_offset as text
-%        str2double(get(hObject,'String')) returns contents of y_offset as a double
-
 
 % --- Executes during object creation, after setting all properties.
 function y_offset_CreateFcn(hObject, eventdata, handles)
@@ -378,17 +321,6 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
     set(hObject,'BackgroundColor','white');
 end
 
-
-
-function z_offset_Callback(hObject, eventdata, handles)
-% hObject    handle to z_offset (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of z_offset as text
-%        str2double(get(hObject,'String')) returns contents of z_offset as a double
-
-
 % --- Executes during object creation, after setting all properties.
 function z_offset_CreateFcn(hObject, eventdata, handles)
 % hObject    handle to z_offset (see GCBO)
@@ -400,17 +332,6 @@ function z_offset_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
-
-
-
-function x_offset_Callback(hObject, eventdata, handles)
-% hObject    handle to x_offset (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of x_offset as text
-%        str2double(get(hObject,'String')) returns contents of x_offset as a double
-
 
 % --- Executes during object creation, after setting all properties.
 function x_offset_CreateFcn(hObject, eventdata, handles)
@@ -424,17 +345,6 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
     set(hObject,'BackgroundColor','white');
 end
 
-
-
-function folder_name_Callback(hObject, eventdata, handles)
-% hObject    handle to folder_name (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of folder_name as text
-%        str2double(get(hObject,'String')) returns contents of folder_name as a double
-
-
 % --- Executes during object creation, after setting all properties.
 function folder_name_CreateFcn(hObject, eventdata, handles)
 % hObject    handle to folder_name (see GCBO)
@@ -447,16 +357,6 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
     set(hObject,'BackgroundColor','white');
 end
 
-
-function intensity_Callback(hObject, eventdata, handles)
-% hObject    handle to intensity (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of intensity as text
-%        str2double(get(hObject,'String')) returns contents of intensity as a double
-
-
 % --- Executes during object creation, after setting all properties.
 function intensity_CreateFcn(hObject, eventdata, handles)
 % hObject    handle to intensity (see GCBO)
@@ -468,26 +368,6 @@ function intensity_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
-
-
-% --- Executes on selection change in phan_type.
-function phan_type_Callback(hObject, eventdata, handles)
-% hObject    handle to phan_type (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: contents = cellstr(get(hObject,'String')) returns phan_type contents as cell array
-%        contents{get(hObject,'Value')} returns selected item from phan_type
-
-
-function update_Callback(hObject, eventdata, handles)
-% hObject    handle to update (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of update as text
-%        str2double(get(hObject,'String')) returns contents of update as a double
-
 
 % --- Executes during object creation, after setting all properties.
 function update_CreateFcn(hObject, eventdata, handles)
