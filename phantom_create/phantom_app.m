@@ -22,7 +22,7 @@ function varargout = phantom_app(varargin)
 
 % Edit the above text to modify the response to help phantom_app
 
-% Last Modified by GUIDE v2.5 21-Jun-2018 11:41:15
+% Last Modified by GUIDE v2.5 22-Jun-2018 12:09:23
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -237,6 +237,90 @@ function clear_updates_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 set(handles.update, 'String', string(''));
+
+
+%% functions to use return key to add/remove/generate
+% https://www.mathworks.com/matlabcentral/answers/1450-gui-for-keyboard-pressed-representing-the-push-button
+
+% --- Executes on key press with focus on x_offset and none of its controls.
+function x_offset_KeyPressFcn(hObject, eventdata, handles)
+% hObject    handle to x_offset (see GCBO)
+% eventdata  structure with the following fields (see MATLAB.UI.CONTROL.UICONTROL)
+%	Key: name of the key that was pressed, in lower case
+%	Character: character interpretation of the key(s) that was pressed
+%	Modifier: name(s) of the modifier key(s) (i.e., control, shift) pressed
+% handles    structure with handles and user data (see GUIDATA)
+return_press_do(hObject, eventdata, handles, handles.add, @add_Callback);
+
+% --- Executes on key press with focus on y_offset and none of its controls.
+function y_offset_KeyPressFcn(hObject, eventdata, handles)
+% hObject    handle to y_offset (see GCBO)
+% eventdata  structure with the following fields (see MATLAB.UI.CONTROL.UICONTROL)
+%	Key: name of the key that was pressed, in lower case
+%	Character: character interpretation of the key(s) that was pressed
+%	Modifier: name(s) of the modifier key(s) (i.e., control, shift) pressed
+% handles    structure with handles and user data (see GUIDATA)
+return_press_do(hObject, eventdata, handles, handles.add, @add_Callback);
+
+% --- Executes on key press with focus on z_offset and none of its controls.
+function z_offset_KeyPressFcn(hObject, eventdata, handles)
+% hObject    handle to z_offset (see GCBO)
+% eventdata  structure with the following fields (see MATLAB.UI.CONTROL.UICONTROL)
+%	Key: name of the key that was pressed, in lower case
+%	Character: character interpretation of the key(s) that was pressed
+%	Modifier: name(s) of the modifier key(s) (i.e., control, shift) pressed
+% handles    structure with handles and user data (see GUIDATA)
+return_press_do(hObject, eventdata, handles, handles.add, @add_Callback);
+
+% --- Executes on key press with focus on x_extent and none of its controls.
+function x_extent_KeyPressFcn(hObject, eventdata, handles)
+% hObject    handle to x_extent (see GCBO)
+% eventdata  structure with the following fields (see MATLAB.UI.CONTROL.UICONTROL)
+%	Key: name of the key that was pressed, in lower case
+%	Character: character interpretation of the key(s) that was pressed
+%	Modifier: name(s) of the modifier key(s) (i.e., control, shift) pressed
+% handles    structure with handles and user data (see GUIDATA)
+return_press_do(hObject, eventdata, handles, handles.add, @add_Callback);
+
+% --- Executes on key press with focus on y_extent and none of its controls.
+function y_extent_KeyPressFcn(hObject, eventdata, handles)
+% hObject    handle to y_extent (see GCBO)
+% eventdata  structure with the following fields (see MATLAB.UI.CONTROL.UICONTROL)
+%	Key: name of the key that was pressed, in lower case
+%	Character: character interpretation of the key(s) that was pressed
+%	Modifier: name(s) of the modifier key(s) (i.e., control, shift) pressed
+% handles    structure with handles and user data (see GUIDATA)
+return_press_do(hObject, eventdata, handles, handles.add, @add_Callback);
+
+% --- Executes on key press with focus on z_extent and none of its controls.
+function z_extent_KeyPressFcn(hObject, eventdata, handles)
+% hObject    handle to z_extent (see GCBO)
+% eventdata  structure with the following fields (see MATLAB.UI.CONTROL.UICONTROL)
+%	Key: name of the key that was pressed, in lower case
+%	Character: character interpretation of the key(s) that was pressed
+%	Modifier: name(s) of the modifier key(s) (i.e., control, shift) pressed
+% handles    structure with handles and user data (see GUIDATA)
+return_press_do(hObject, eventdata, handles, handles.add, @add_Callback);
+
+% --- Executes on key press with focus on intensity and none of its controls.
+function intensity_KeyPressFcn(hObject, eventdata, handles)
+% hObject    handle to intensity (see GCBO)
+% eventdata  structure with the following fields (see MATLAB.UI.CONTROL.UICONTROL)
+%	Key: name of the key that was pressed, in lower case
+%	Character: character interpretation of the key(s) that was pressed
+%	Modifier: name(s) of the modifier key(s) (i.e., control, shift) pressed
+% handles    structure with handles and user data (see GUIDATA)
+return_press_do(hObject, eventdata, handles, handles.add, @add_Callback);
+
+% --- Executes on key press with focus on add and none of its controls.
+function add_KeyPressFcn(hObject, eventdata, handles)
+% hObject    handle to add (see GCBO)
+% eventdata  structure with the following fields (see MATLAB.UI.CONTROL.UICONTROL)
+%	Key: name of the key that was pressed, in lower case
+%	Character: character interpretation of the key(s) that was pressed
+%	Modifier: name(s) of the modifier key(s) (i.e., control, shift) pressed
+% handles    structure with handles and user data (see GUIDATA)
+return_press_do(hObject, eventdata, handles, handles.add, @add_Callback);
 
 
 %% allows for debugging with variables in scope

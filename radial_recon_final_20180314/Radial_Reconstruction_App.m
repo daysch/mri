@@ -250,7 +250,6 @@ function recon_Callback(hObject, eventdata, handles)
 function phant_Callback(hObject, eventdata, handles)
 
 %% return key presses run button
-% https://www.mathworks.com/matlabcentral/answers/1450-gui-for-keyboard-pressed-representing-the-push-button
 % --- Executes on key press with focus on figure1 or any of its controls.
 function figure1_WindowKeyPressFcn(hObject, eventdata, handles)
 % hObject    handle to figure1 (see GCBO)
