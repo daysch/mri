@@ -22,7 +22,7 @@ function varargout = Radial_Reconstruction_App(varargin)
 
 % Edit the above text to modify the response to help Radial_Reconstruction_App
 
-% Last Modified by GUIDE v2.5 22-Jun-2018 15:35:59
+% Last Modified by GUIDE v2.5 22-Jun-2018 15:43:49
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -115,50 +115,6 @@ catch M
     rethrow(M);
 end
 
-function prepts_Callback(hObject, eventdata, handles)
-% hObject    handle to prepts (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of prepts as text
-%        str2double(get(hObject,'String')) returns contents of prepts as a double
-
-
-
-% --- Executes during object creation, after setting all properties.
-function prepts_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to prepts (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
-
-function firstpt_Callback(hObject, eventdata, handles)
-% hObject    handle to firstpt (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of firstpt as text
-%        str2double(get(hObject,'String')) returns contents of firstpt as a double
-
-
-% --- Executes during object creation, after setting all properties.
-function firstpt_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to firstpt (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
 
 %% closes all open figures
 % --- Executes on button press in close_all.
@@ -178,50 +134,6 @@ switch answer
 end
 
 
-function numpts_Callback(hObject, eventdata, handles)
-% hObject    handle to numpts (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of numpts as text
-%        str2double(get(hObject,'String')) returns contents of numpts as a double
-
-
-% --- Executes during object creation, after setting all properties.
-function numpts_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to numpts (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
-
-function recon_matrix_size_Callback(hObject, eventdata, handles)
-% hObject    handle to recon_matrix_size (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of recon_matrix_size as text
-%        str2double(get(hObject,'String')) returns contents of recon_matrix_size as a double
-
-
-% --- Executes during object creation, after setting all properties.
-function recon_matrix_size_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to recon_matrix_size (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
 %% select folder to be used
 % --- Executes on button press in choose_file.
 function choose_file_Callback(hObject, eventdata, handles)
@@ -229,6 +141,9 @@ function choose_file_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
     handles.data_path = uigetdir('../');
+    if isequal(handles.data_path, 0) % check whether user pressed cancel
+        return
+    end
     [~, folder] = fileparts(handles.data_path);
     set(handles.folder_display, 'String', folder);
     guidata(hObject, handles);   % Store handles
@@ -461,7 +376,6 @@ function close_all_KeyPressFcn(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 return_press_do(hObject, eventdata, handles, handles.close_all, @close_all_Callback);
 
-
 % --- Executes on key press with focus on pause and none of its controls.
 function pause_KeyPressFcn(hObject, eventdata, handles)
 % hObject    handle to pause (see GCBO)
@@ -472,7 +386,6 @@ function pause_KeyPressFcn(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 return_press_do(hObject, eventdata, handles, handles.pause, @pause_Callback);
 
-
 % --- Executes on key press with focus on cancel_batch and none of its controls.
 function cancel_batch_KeyPressFcn(hObject, eventdata, handles)
 % hObject    handle to cancel_batch (see GCBO)
@@ -482,3 +395,53 @@ function cancel_batch_KeyPressFcn(hObject, eventdata, handles)
 %	Modifier: name(s) of the modifier key(s) (i.e., control, shift) pressed
 % handles    structure with handles and user data (see GUIDATA)
 return_press_do(hObject, eventdata, handles, handles.cancel_batch, @cancel_batch_Callback);
+
+
+%% basically unused create functions
+% --- Executes during object creation, after setting all properties.
+function numpts_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to numpts (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+% --- Executes during object creation, after setting all properties.
+function recon_matrix_size_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to recon_matrix_size (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+% --- Executes during object creation, after setting all properties.
+function prepts_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to prepts (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+% --- Executes during object creation, after setting all properties.
+function firstpt_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to firstpt (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
