@@ -203,7 +203,7 @@ function radial_recon_rs2d_20180314_two_grads(handles)
         add_string_gui(handles, 'Step 2. Blurring data .... ');
     end
     tic; % timing
-    k_blurred = blur_mhd_20180314_two_acquisitions(recon_matrix_size, nsample, k_filtered, x_grad, y_grad, z_grad);
+    k_blurred = blur_mhd_20180314_two_acquisitions(recon_matrix_size, nsample, k_filtered, x_grad, y_grad, z_grad, handles);
     toc; % timing
     if nargin == 1
         update_gui_time(handles); % sends loading time to gui

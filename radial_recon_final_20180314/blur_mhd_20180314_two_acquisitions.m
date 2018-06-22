@@ -23,9 +23,12 @@ function k_phantom_blurred = blur_mhd_20180314_two_acquisitions(recon_matrix_siz
     % create parallel pool if needed
     if isempty(p)
         if nargin == 7
-            add_string_gui(handles, 'Creating parallel pool. This may take a minute')
+            add_string_gui(handles, 'Creating parallel pool. This may take a minute ....')
         end
         p = parpool([1 num_cores]);
+        if nargin == 7
+            add_string_gui(handles, 'Parallel pool created')
+        end
     end
     % submt jobs to pool
     for ii = 1:p.NumWorkers

@@ -22,7 +22,7 @@ function varargout = Radial_Reconstruction_App(varargin)
 
 % Edit the above text to modify the response to help Radial_Reconstruction_App
 
-% Last Modified by GUIDE v2.5 22-Jun-2018 14:54:06
+% Last Modified by GUIDE v2.5 22-Jun-2018 15:35:59
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -106,7 +106,8 @@ catch M
 end
 
 % run reconstruction and reset for next
-try 
+try
+    add_string_gui(handles, 'Running individual reconstruction ....')
     run_reconstruction(handles, hObject);
     reset_gui(handles, hObject);
 catch M
@@ -281,8 +282,8 @@ subFolders = files(dirFlags);
 folder_path = handles.data_path; % save path to outer folder
 
 % initialize update box and buttons
-processed_so_far = []; % string to update user on progress of batch
-set(handles.update, 'String', '');
+processed_so_far = string('Running batch reconstruction...'); % string to update user on progress of batch
+set(handles.update, 'String', 'Running batch reconstruction...');
 set(handles.pause, 'enable', 'on');
 
 % iterate through subfolders, skipping ones that cause errors
@@ -420,6 +421,15 @@ function recon_matrix_size_KeyPressFcn(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 return_press_do(hObject, eventdata, handles, handles.run, @run_Callback);
 
+% --- Executes on key press with focus on run and none of its controls.
+function run_KeyPressFcn(hObject, eventdata, handles)
+% hObject    handle to run (see GCBO)
+% eventdata  structure with the following fields (see MATLAB.UI.CONTROL.UICONTROL)
+%	Key: name of the key that was pressed, in lower case
+%	Character: character interpretation of the key(s) that was pressed
+%	Modifier: name(s) of the modifier key(s) (i.e., control, shift) pressed
+% handles    structure with handles and user data (see GUIDATA)
+return_press_do(hObject, eventdata, handles, handles.run, @run_Callback);
 
 % --- Executes on key press with focus on choose_file and none of its controls.
 function choose_file_KeyPressFcn(hObject, eventdata, handles)
@@ -430,3 +440,45 @@ function choose_file_KeyPressFcn(hObject, eventdata, handles)
 %	Modifier: name(s) of the modifier key(s) (i.e., control, shift) pressed
 % handles    structure with handles and user data (see GUIDATA)
 return_press_do(hObject, eventdata, handles, handles.choose_file, @choose_file_Callback);
+
+% --- Executes on key press with focus on batch_run and none of its controls.
+function batch_run_KeyPressFcn(hObject, eventdata, handles)
+% hObject    handle to batch_run (see GCBO)
+% eventdata  structure with the following fields (see MATLAB.UI.CONTROL.UICONTROL)
+%	Key: name of the key that was pressed, in lower case
+%	Character: character interpretation of the key(s) that was pressed
+%	Modifier: name(s) of the modifier key(s) (i.e., control, shift) pressed
+% handles    structure with handles and user data (see GUIDATA)
+return_press_do(hObject, eventdata, handles, handles.batch_run, @batch_run_Callback);
+
+% --- Executes on key press with focus on close_all and none of its controls.
+function close_all_KeyPressFcn(hObject, eventdata, handles)
+% hObject    handle to close_all (see GCBO)
+% eventdata  structure with the following fields (see MATLAB.UI.CONTROL.UICONTROL)
+%	Key: name of the key that was pressed, in lower case
+%	Character: character interpretation of the key(s) that was pressed
+%	Modifier: name(s) of the modifier key(s) (i.e., control, shift) pressed
+% handles    structure with handles and user data (see GUIDATA)
+return_press_do(hObject, eventdata, handles, handles.close_all, @close_all_Callback);
+
+
+% --- Executes on key press with focus on pause and none of its controls.
+function pause_KeyPressFcn(hObject, eventdata, handles)
+% hObject    handle to pause (see GCBO)
+% eventdata  structure with the following fields (see MATLAB.UI.CONTROL.UICONTROL)
+%	Key: name of the key that was pressed, in lower case
+%	Character: character interpretation of the key(s) that was pressed
+%	Modifier: name(s) of the modifier key(s) (i.e., control, shift) pressed
+% handles    structure with handles and user data (see GUIDATA)
+return_press_do(hObject, eventdata, handles, handles.pause, @pause_Callback);
+
+
+% --- Executes on key press with focus on cancel_batch and none of its controls.
+function cancel_batch_KeyPressFcn(hObject, eventdata, handles)
+% hObject    handle to cancel_batch (see GCBO)
+% eventdata  structure with the following fields (see MATLAB.UI.CONTROL.UICONTROL)
+%	Key: name of the key that was pressed, in lower case
+%	Character: character interpretation of the key(s) that was pressed
+%	Modifier: name(s) of the modifier key(s) (i.e., control, shift) pressed
+% handles    structure with handles and user data (see GUIDATA)
+return_press_do(hObject, eventdata, handles, handles.cancel_batch, @cancel_batch_Callback);
