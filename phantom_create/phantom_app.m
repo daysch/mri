@@ -94,7 +94,7 @@ if isempty(folder)
     unpause_gui;
     return;
 end
-if exist(['..' filesep 'phantom_objects' filesep folder], 'dir')
+if exist([fileparts(fileparts(mfilename('fullpath'))) filesep 'phantom_objects' filesep folder], 'dir')
     answer = questdlg('Overwrite phantom?', 'A phantom with that name already exists. Overwrite phantom?', ...
                       'Overwrite', 'Cancel', 'Cancel');
     switch answer
@@ -112,13 +112,13 @@ add_string_gui(handles, [newline 'generating phantom...']);
 try
     pseudo_data_phantom(phan_true, folder, handles.recon_matrix_size, handles);
     if get(handles.disp_phan, 'Value') 
-        addpath(['..' filesep '3D Viewers' filesep 'vi']); 
+        addpath([fileparts(fileparts(mfilename('fullpath'))) filesep '3D Viewers' filesep 'vi']); 
         vi(abs(phan_true), 'aspect', [5 5 5]);
     end
     add_string_gui(handles, ['done' newline newline newline]);
 catch M
     unpause_gui;
-    add_string_gui(handles, [string(newline) string('UNABLE TO GENERATE PHANTOM:'); string(M.message)]);
+    add_string_gui(handles, [string(''); string('UNABLE TO GENERATE PHANTOM:'); string(M.message); string(''); string(''); string('')]);
     errordlg(['unable to generate phantom:' newline M.message]);
 end
 unpause_gui;
@@ -135,7 +135,7 @@ pause_gui;
 
 % validate inputs
 try
-    validate_inputs;
+    validate_phantom_inputs;
 catch M
     unpause_gui;
     switch M.message
@@ -187,6 +187,7 @@ switch answer
     case 'Confirm'
         handles.real_phans = {};
         set(handles.phan_list, 'String', ' ');
+        set(handles.phan_list, 'Value', 1);
         set(handles.remove, 'enable', 'off');
         set(handles.generate, 'enable', 'off');
         add_string_gui(handles, [newline newline newline 'cleared shapes' newline newline newline]);

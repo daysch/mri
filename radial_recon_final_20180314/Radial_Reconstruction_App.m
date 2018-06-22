@@ -94,7 +94,7 @@ set(handles.update, 'String', '');
 % parse and validate inputs
 try
     disable_gui(handles);
-    validate_inputs;
+    validate_recon_inputs;
 catch M
     reset_gui(handles, hObject);
     switch M.message
@@ -285,7 +285,7 @@ function batch_run_Callback(hObject, eventdata, handles)
 % parse and validate inputs
 try
     disable_gui(handles);
-    validate_inputs;
+    validate_recon_inputs;
 catch M
     reset_gui(handles, hObject);
     switch M.message

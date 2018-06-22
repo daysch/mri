@@ -282,8 +282,8 @@ function radial_recon_rs2d_20180314_two_grads(handles)
         add_string_gui(handles, 'Plotting results .... ');
     end
 
-    figure; imshow3Dfull(abs(recon_final));
-    %figure; addpath([fileparts(fileparts(mfilename('fullpath'))) filesep '3D Viewers' filesep 'vi']); vi(abs(recon_final), 'aspect', [5 5 5]);
+    %figure; imshow3Dfull(abs(recon_final));
+    addpath([fileparts(fileparts(mfilename('fullpath'))) filesep '3D Viewers' filesep 'vi']); vi(abs(recon_final), 'aspect', [5 5 5]);
     
     disp('Done.')
     if nargin == 1
