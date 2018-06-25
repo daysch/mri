@@ -10,7 +10,7 @@ else
     try
         radial_recon_rs2d_20180314_two_grads(handles);
     catch M
-        uiwait(errordlg(['Unexpected error in execution of reconstruction:' newline M.message]));
+        errordlg(['Unexpected error in execution of reconstruction:' newline M.message]);
         add_string_gui(handles, ['Unexpected error in execution of reconstruction:' newline M.message])
         error(['Unexpected error in execution of reconstruction:' newline M.message]);
     end

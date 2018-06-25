@@ -139,7 +139,7 @@ function choose_file_Callback(hObject, eventdata, handles)
 % hObject    handle to choose_file (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-    handles.data_path = uigetdir('../');
+    handles.data_path = uigetdir('..');
     if isequal(handles.data_path, 0) % check whether user pressed cancel
         return
     end
@@ -194,10 +194,12 @@ dirFlags = [files.isdir] & ~strcmp({files.name},'.') & ~strcmp({files.name},'..'
 subFolders = files(dirFlags);
 folder_path = handles.data_path; % save path to outer folder
 
-% initialize update box and buttons
+% initialize update box, wait bar, buttons
 processed_so_far = string('Running batch reconstruction...'); % string to update user on progress of batch
 set(handles.update, 'String', 'Running batch reconstruction...');
 set(handles.pause, 'enable', 'on');
+wbar = waitbar(0, sprintf('Completed 0 out of %d reconstructions', length(subFolders)), ...
+               'Name', 'Running Batch Reconstruction');
 
 % iterate through subfolders, skipping ones that cause errors
 for ii = 1:length(subFolders)
@@ -220,6 +222,7 @@ for ii = 1:length(subFolders)
                 handles.data_path = folder_path;
                 handles.quit_batch = false;
                 guidata(hObject, handles);
+                close(wbar);
                 add_string_gui(handles, 'Batch job aborted');
                 return;
             end
@@ -241,9 +244,13 @@ for ii = 1:length(subFolders)
         processed_so_far = [processed_so_far newline string(['ERROR IN PROCESSING FOLDER ' subFolders(ii).name ':' newline, M.message newline])];
         set(handles.update, 'String', processed_so_far);
     end
+    waitbar(ii/length(subFolders), wbar, ...
+        sprintf('Completed %d out of %d reconstructions', ii, length(subFolders)));
+    figure(wbar);
 end
 % clean up
 reset_gui(handles, hObject);
+close(wbar);
 handles.data_path = folder_path;
 guidata(hObject, handles);
 figure(handles.Radial_Reconstruction_App);
