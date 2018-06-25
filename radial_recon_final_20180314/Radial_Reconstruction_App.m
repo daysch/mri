@@ -22,7 +22,7 @@ function varargout = Radial_Reconstruction_App(varargin)
 
 % Edit the above text to modify the response to help Radial_Reconstruction_App
 
-% Last Modified by GUIDE v2.5 22-Jun-2018 15:43:49
+% Last Modified by GUIDE v2.5 25-Jun-2018 10:08:16
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -56,7 +56,6 @@ function Radial_Reconstruction_App_OpeningFcn(hObject, eventdata, handles, varar
 handles.output = hObject;
 
 % set up variables
-handles.debug = false;
 handles.continue = true;
 handles.quit_batch = false;
 
@@ -156,8 +155,7 @@ function show_errors_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 % Hint: get(hObject,'Value') returns toggle state of show_errors
-handles.debug = ~get(hObject,'Value');
-guidata(hObject, handles);
+
 
 
 %% For debugging purposes
@@ -399,6 +397,16 @@ function cancel_batch_KeyPressFcn(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 return_press_do(hObject, eventdata, handles, handles.cancel_batch, @cancel_batch_Callback);
 
+% --- Executes on key press with focus on show_errors and none of its controls.
+function show_errors_KeyPressFcn(hObject, eventdata, handles)
+% hObject    handle to show_errors (see GCBO)
+% eventdata  structure with the following fields (see MATLAB.UI.CONTROL.UICONTROL)
+%	Key: name of the key that was pressed, in lower case
+%	Character: character interpretation of the key(s) that was pressed
+%	Modifier: name(s) of the modifier key(s) (i.e., control, shift) pressed
+% handles    structure with handles and user data (see GUIDATA)
+set(handles.show_errors, 'Value', ~handles.show_errors.Value);
+return_press_do(hObject, eventdata, handles, handles.show_errors, @show_errors_Callback);
 
 %% basically unused create functions
 % --- Executes during object creation, after setting all properties.

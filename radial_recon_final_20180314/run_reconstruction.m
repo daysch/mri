@@ -4,13 +4,13 @@ function run_reconstruction(handles, hObject)
 % handles    structure with handles and user data (see GUIDATA)
 
 % run reconstruction. inform gui user of errors (if desired)
-if handles.debug 
+if ~get(handles.show_errors, 'Value')
     radial_recon_rs2d_20180314_two_grads(handles);
 else
     try
         radial_recon_rs2d_20180314_two_grads(handles);
     catch M
-        errordlg(['Unexpected error in execution of reconstruction:' newline M.message]);
+        uiwait(errordlg(['Unexpected error in execution of reconstruction:' newline M.message]));
         add_string_gui(handles, ['Unexpected error in execution of reconstruction:' newline M.message])
         error(['Unexpected error in execution of reconstruction:' newline M.message]);
     end

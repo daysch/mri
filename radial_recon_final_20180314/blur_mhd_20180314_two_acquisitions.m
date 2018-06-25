@@ -5,9 +5,6 @@
 
 
 function k_phantom_blurred = blur_mhd_20180314_two_acquisitions(recon_matrix_size, nsample, data_in, x_grad, y_grad, z_grad, handles)
-    %% creates the coordinates onto which the measured data will be blurred.
-    k_phantom_blurred = zeros(recon_matrix_size,recon_matrix_size,recon_matrix_size);
-
     nmeas = length(x_grad);
     
     %% parallel programming for speed. Splitting into number of cores on machine

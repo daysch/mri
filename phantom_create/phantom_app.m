@@ -22,7 +22,7 @@ function varargout = phantom_app(varargin)
 
 % Edit the above text to modify the response to help phantom_app
 
-% Last Modified by GUIDE v2.5 22-Jun-2018 14:45:31
+% Last Modified by GUIDE v2.5 25-Jun-2018 10:03:59
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -91,8 +91,9 @@ pause_gui;
 % validate folder name
 folder = get(handles.folder_name, 'String');
 if isempty(folder)
-    errordlg('please specify name to save as');
+    uiwait(errordlg('please specify name to save as'));
     unpause_gui;
+    uicontrol(handles.folder_name);
     return;
 end
 if exist([fileparts(fileparts(mfilename('fullpath'))) filesep 'phantom_objects' filesep folder], 'dir')
@@ -241,7 +242,6 @@ set(handles.update, 'String', string(''));
 
 
 %% functions to use return key to add/remove/generate
-% https://www.mathworks.com/matlabcentral/answers/1450-gui-for-keyboard-pressed-representing-the-push-button
 
 % --- Executes on key press with focus on x_offset and none of its controls.
 % --- Executes on key press with focus on phan_type and none of its controls.
@@ -394,6 +394,17 @@ function clear_updates_KeyPressFcn(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 return_press_do(hObject, eventdata, handles, handles.clear_updates, @clear_updates_Callback);
 
+% --- Executes on key press with focus on disp_phan and none of its controls.
+function disp_phan_KeyPressFcn(hObject, eventdata, handles)
+% hObject    handle to disp_phan (see GCBO)
+% eventdata  structure with the following fields (see MATLAB.UI.CONTROL.UICONTROL)
+%	Key: name of the key that was pressed, in lower case
+%	Character: character interpretation of the key(s) that was pressed
+%	Modifier: name(s) of the modifier key(s) (i.e., control, shift) pressed
+% handles    structure with handles and user data (see GUIDATA)
+set(handles.disp_phan, 'Value', ~handles.disp_phan.Value);
+return_press_do(hObject, eventdata, handles, handles.disp_phan, @disp_phan_Callback);
+
 
 %% allows for debugging with variables in scope
 % --- Executes on button press in debug.
@@ -536,3 +547,12 @@ function update_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
+
+%% does nothing, but passed into return_press_do
+% --- Executes on button press in disp_phan.
+function disp_phan_Callback(hObject, eventdata, handles)
+% hObject    handle to disp_phan (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of disp_phan
