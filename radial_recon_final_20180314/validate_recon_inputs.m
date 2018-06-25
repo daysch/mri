@@ -1,4 +1,4 @@
-%% validates inputs. throws error 'known error' if input is bad, to be picked up function that calls this script
+%% validates inputs. throws error 'known error' if input is bad, to be picked up by function that calls this script
 % collect values
 handles.firstpt_val = str2double(get(handles.firstpt, 'String'));
 handles.prepts_val = str2double(get(handles.prepts, 'String'));
