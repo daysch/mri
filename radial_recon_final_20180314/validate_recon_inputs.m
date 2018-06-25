@@ -7,25 +7,25 @@ handles.recon_matrix_size_val = str2double(get(handles.recon_matrix_size, 'Strin
 % make sure all values filled out
 if isnan(handles.firstpt_val) || isnan(handles.prepts_val) || ... 
         isnan(handles.recon_matrix_size_val)
-    errordlg('Please fill out parameters');
+    uiwait(errordlg('Please fill out parameters'));
     error('known error');
 elseif ~isfield(handles, 'data_path') || isa(handles.data_path, 'double')
-    errordlg('Please select folder');
+    uiwait(errordlg('Please select folder'));
     error('known error');
 end
 
 % confirm validity of inputs
 if mod(handles.firstpt_val, 1) ~= 0 || mod(handles.prepts_val, 1) ~= 0 || mod(handles.recon_matrix_size_val, 1) ~= 0
-    errordlg('parameters must be integers');
+    uiwait(errordlg('parameters must be integers'));
     error('known error');
 elseif handles.firstpt_val <= handles.prepts_val
-    errordlg('First point must be greater than zero point');
+    uiwait(errordlg('First point must be greater than zero point'));
     error('known error');
 elseif handles.prepts_val < 0
-    errordlg('zero point cannot be negative');
+    uiwait(errordlg('zero point cannot be negative'));
     error('known error');
 elseif handles.recon_matrix_size_val <= 0 || mod(handles.recon_matrix_size_val, 2) ~= 0
-    errordlg('recon matrix must be a positive multiple of two');
+    uiwait(errordlg('recon matrix must be a positive multiple of two'));
     error('known error');
 end
 
