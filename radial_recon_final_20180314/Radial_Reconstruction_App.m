@@ -194,10 +194,13 @@ dirFlags = [files.isdir] & ~strcmp({files.name},'.') & ~strcmp({files.name},'..'
 subFolders = files(dirFlags);
 folder_path = handles.data_path; % save path to outer folder
 
-% initialize update box and buttons
+% initialize update box, progress bar, and buttons
 processed_so_far = string('Running batch reconstruction...'); % string to update user on progress of batch
 set(handles.update, 'String', 'Running batch reconstruction...');
 set(handles.pause, 'enable', 'on');
+wbar = waitbar(0, sprintf('Completed 0 out of %d reconstructions', length(subFolders)), ...
+               'Name', 'Running Batch Reconstruction');
+movegui(wbar,'northeast');
 
 % iterate through subfolders, skipping ones that cause errors
 for ii = 1:length(subFolders)
@@ -220,6 +223,7 @@ for ii = 1:length(subFolders)
                 handles.data_path = folder_path;
                 handles.quit_batch = false;
                 guidata(hObject, handles);
+                close(wbar);
                 add_string_gui(handles, 'Batch job aborted');
                 return;
             end
@@ -241,9 +245,18 @@ for ii = 1:length(subFolders)
         processed_so_far = [processed_so_far newline string(['ERROR IN PROCESSING FOLDER ' subFolders(ii).name ':' newline, M.message newline])];
         set(handles.update, 'String', processed_so_far);
     end
+    
+    % if waitbar still on screen, update it
+    try
+        waitbar(ii/length(subFolders), wbar, ...
+        sprintf('Completed %d out of %d reconstructions', ii, length(subFolders)));
+        figure(wbar);
+    catch
+    end
 end
 % clean up
 reset_gui(handles, hObject);
+close(wbar)
 handles.data_path = folder_path;
 guidata(hObject, handles);
 figure(handles.Radial_Reconstruction_App);
