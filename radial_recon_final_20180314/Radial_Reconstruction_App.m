@@ -126,9 +126,16 @@ function close_all_Callback(hObject, eventdata, handles)
 answer = questdlg('Close all figures?','Confirm Closing','Confirm','Cancel', 'Confirm');
 switch answer 
     case 'Confirm'
-        set(handles.Radial_Reconstruction_App, 'HandleVisibility', 'off'); % keeps the gui from being closed
+        set(handles.Radial_Reconstruction_App, 'HandleVisibility', 'off'); % keeps this gui from being closed
+        pa = findobj('Tag','phantom_app');
+        if ~isempty(pa)
+            set(pa, 'HandleVisibility', 'off'); % keeps phantom app from being closed
+        end
         close all;
         set(handles.Radial_Reconstruction_App, 'HandleVisibility', 'on');
+        if ~isempty(pa)
+            set(pa, 'HandleVisibility', 'on');
+        end
         drawnow;
 end
 
