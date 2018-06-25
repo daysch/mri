@@ -200,6 +200,7 @@ set(handles.update, 'String', 'Running batch reconstruction...');
 set(handles.pause, 'enable', 'on');
 wbar = waitbar(0, sprintf('Completed 0 out of %d reconstructions', length(subFolders)), ...
                'Name', 'Running Batch Reconstruction');
+movegui(wbar,'northeast');
 
 % iterate through subfolders, skipping ones that cause errors
 for ii = 1:length(subFolders)
@@ -244,9 +245,14 @@ for ii = 1:length(subFolders)
         processed_so_far = [processed_so_far newline string(['ERROR IN PROCESSING FOLDER ' subFolders(ii).name ':' newline, M.message newline])];
         set(handles.update, 'String', processed_so_far);
     end
-    waitbar(ii/length(subFolders), wbar, ...
+    
+    % if waitbar still on screen, update it
+    try
+        waitbar(ii/length(subFolders), wbar, ...
         sprintf('Completed %d out of %d reconstructions', ii, length(subFolders)));
-    figure(wbar);
+        figure(wbar);
+    catch
+    end
 end
 % clean up
 reset_gui(handles, hObject);
