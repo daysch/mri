@@ -283,14 +283,18 @@ function radial_recon_rs2d_20180314_two_grads(handles)
     end
 
     %figure; imshow3Dfull(abs(recon_final));
-    addpath([fileparts(fileparts(mfilename('fullpath'))) filesep '3D Viewers' filesep 'vi']); vi(abs(recon_final), 'aspect', [5 5 5]);
+    addpath([fileparts(fileparts(mfilename('fullpath'))) filesep '3D Viewers' filesep 'vi']); 
+    scale = 64/recon_matrix_size*8;
+    vi(abs(recon_final), 'aspect', [scale scale scale]);
     
-    disp('Done.')
-    if nargin == 1
-        add_string_gui(handles, 'Done. ');
-    end
 
-    %% Save log to CSV, when called from GUI
+    %% Save data
+    disp('Saving ....')
+    if nargin == 1
+        add_string_gui(handles, 'Saving ....');
+    end
+    
+    % Save log to CSV, when called from GUI
     if nargin == 1
         if ~exist([fileparts(fileparts(mfilename('fullpath'))) filesep 'log.csv'], 'file')
             fileid = fopen(['..' filesep 'log.csv'], 'wt');
@@ -313,4 +317,13 @@ function radial_recon_rs2d_20180314_two_grads(handles)
     save([fileparts(fileparts(mfilename('fullpath'))) filesep 'phantom_create' filesep 'workspace'], ... 
         'npts', 'nspokes', 'data_grads_full', 'x_grad', 'y_grad', 'z_grad');
     
+    
+    % save reconstruction
+    save([data_path filesep handles.savename], 'recon_final');
+    
+    disp('Done.')
+    if nargin == 1
+        add_string_gui(handles, 'Done.');
+    end
+
 end
