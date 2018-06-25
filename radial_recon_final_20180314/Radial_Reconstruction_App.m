@@ -22,7 +22,7 @@ function varargout = Radial_Reconstruction_App(varargin)
 
 % Edit the above text to modify the response to help Radial_Reconstruction_App
 
-% Last Modified by GUIDE v2.5 25-Jun-2018 10:08:16
+% Last Modified by GUIDE v2.5 25-Jun-2018 16:54:09
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -475,4 +475,43 @@ function firstpt_CreateFcn(hObject, eventdata, handles)
 %       See ISPC and COMPUTER.
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in open_recon.
+function open_recon_Callback(hObject, eventdata, handles)
+% hObject    handle to open_recon (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+[filename, pathname] = uigetfile('../');
+if isequal(filename, 0) % check whether user pressed cancel
+    return
+end
+
+% try to load reconstruction
+try
+    vars = load([pathname filename]);
+catch
+    uiwait(errordlg('Unable to find data'));
+    return;
+end
+
+% try to load reconstruction
+if isfield(vars, 'phan_true')
+    reconstruction = vars.phan_true;
+elseif isfield(vars, 'recon_final')
+    reconstruction = vars.recon_final;
+else
+    uiwait(errordlg('unable to load reconstructed matrix (must contain variable called phan_true or recon_final'));
+    return;
+end
+
+% display reconstruction 
+try
+    addpath([fileparts(fileparts(mfilename('fullpath'))) filesep '3D Viewers' filesep 'vi']); 
+    scale = 64/length(reconstruction)*8;
+    vi(abs(reconstruction), 'aspect', [scale scale scale]);
+catch M
+    errordlg(['unable to load reconstruction:' newline M.message]);
+    rethrow(M);
 end
