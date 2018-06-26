@@ -22,7 +22,7 @@ function varargout = Radial_Reconstruction_App(varargin)
 
 % Edit the above text to modify the response to help Radial_Reconstruction_App
 
-% Last Modified by GUIDE v2.5 26-Jun-2018 13:25:32
+% Last Modified by GUIDE v2.5 26-Jun-2018 14:32:03
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -252,8 +252,12 @@ for ii = 1:length(subFolders)
     catch M
         processed_so_far = [processed_so_far newline string(['ERROR IN PROCESSING FOLDER ' subFolders(ii).name ':' newline, M.message newline 'Skipping...' newline])];
         set(handles.update, 'String', processed_so_far);
-        add_string_gui(handles, 'Pausing for 5 seconds ....')
-        pause(5);
+        for jj = 0:4
+            old_update = get(handles.update, 'String');
+            add_string_gui (handles, sprintf('waiting for %d seconds', 5-jj));
+            pause(1);
+        end
+        add_string_gui(handles, newline);
     end
     
     % if waitbar still on screen, update it
@@ -535,7 +539,3 @@ catch M
     errordlg(['unable to load reconstruction:' newline M.message]);
     rethrow(M);
 end
-
-
-
-
