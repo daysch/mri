@@ -252,7 +252,7 @@ function phan_type_KeyPressFcn(hObject, eventdata, handles)
 %	Character: character interpretation of the key(s) that was pressed
 %	Modifier: name(s) of the modifier key(s) (i.e., control, shift) pressed
 % handles    structure with handles and user data (see GUIDATA)
-return_press_do(hObject, eventdata, handles, handles.add, @add_Callback);
+return_press_do(hObject, eventdata, handles, handles.x_offset, @NOP);
 
 function x_offset_KeyPressFcn(hObject, eventdata, handles)
 % hObject    handle to x_offset (see GCBO)
