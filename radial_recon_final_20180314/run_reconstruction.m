@@ -5,7 +5,7 @@ function run_reconstruction(handles, hObject)
 
 % check whether reconstruction has already been performed
 handles.savename = 'reconstruction';
-while exist([handles.data_path filesep handles.savename '.mat'], 'file')
+while handles.warn_overwrite.Value && exist([handles.data_path filesep handles.savename '.mat'], 'file')
     answer = timedlg('Choose new name, cancel, or leave blank to overwrite:', ...
                       'Reconstruction Already Exists', 10);
     if isequal(answer,{''}) % cancel if cancel button pressed or timed out

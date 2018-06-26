@@ -7,3 +7,4 @@ function disable_gui(handles)
     set(handles.batch_run, 'enable', 'off');
     set(handles.recon_matrix_size, 'enable', 'off');
     set(handles.show_errors, 'enable', 'off');
+    set(handles.warn_overwrite, 'enable', 'off');
