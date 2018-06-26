@@ -110,6 +110,7 @@ try
     run_reconstruction(handles, hObject);
     reset_gui(handles, hObject);
 catch M
+    add_string_gui(handles, ['FAILURE:' newline M.message]);
     reset_gui(handles, hObject);
     rethrow(M);
 end
@@ -249,7 +250,7 @@ for ii = 1:length(subFolders)
         set(handles.update, 'String', processed_so_far);
         drawnow;
     catch M
-        processed_so_far = [processed_so_far newline string(['ERROR IN PROCESSING FOLDER ' subFolders(ii).name ':' newline, M.message newline])];
+        processed_so_far = [processed_so_far newline string(['ERROR IN PROCESSING FOLDER ' subFolders(ii).name ':' newline, M.message newline 'Skipping...' newline])];
         set(handles.update, 'String', processed_so_far);
     end
     
@@ -261,6 +262,8 @@ for ii = 1:length(subFolders)
     catch
     end
 end
+add_string_gui(handles, 'done.')
+
 % clean up
 reset_gui(handles, hObject);
 close(wbar)
@@ -299,7 +302,8 @@ else
     set(handles.pause, 'String', 'Pause batch job');
     set(handles.pause, 'enable', 'on');
     set(handles.cancel_batch, 'visible', 'off');
-    uicontrol(handles.Radial_Reconstruction_App);
+    drawnow;
+    uicontrol(handles.close_all);
 end
 
 %% cancels a batch run
