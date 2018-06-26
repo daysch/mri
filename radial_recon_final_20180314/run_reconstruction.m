@@ -5,14 +5,15 @@ function run_reconstruction(handles, hObject)
 
 % check whether reconstruction has already been performed
 handles.savename = 'reconstruction';
-while exist([handles.data_path filesep 'reconstruction'], 'file')
+while exist([handles.data_path filesep handles.savename '.mat'], 'file')
     answer = inputdlg('Choose new name, cancel, or leave blank to overwrite:', ...
                       'Reconstruction Already Exists');
-    if isempty(answer)
-        return; % cancel if cancel button pressed
+    if isempty(answer) % cancel if cancel button pressed
+        error('reconstruction already exists. Please rename reconstruction or select new name when prompted');
     elseif isequal(answer,{''})
         break; % overwrite reconstruction if left blank
     end
+    handles.savename = cell2mat(answer);
 end
 
 % run reconstruction. inform gui user of errors (if desired)
