@@ -22,7 +22,7 @@ function varargout = Radial_Reconstruction_App(varargin)
 
 % Edit the above text to modify the response to help Radial_Reconstruction_App
 
-% Last Modified by GUIDE v2.5 26-Jun-2018 14:32:03
+% Last Modified by GUIDE v2.5 26-Jun-2018 15:03:25
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -116,64 +116,6 @@ catch M
 end
 
 
-%% closes all open figures
-% --- Executes on button press in close_all.
-function close_all_Callback(hObject, eventdata, handles)
-% hObject    handle to close_all (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% ask user to confirm closing, close if confirmed
-answer = questdlg('Close all figures?','Confirm Closing','Confirm','Cancel', 'Confirm');
-switch answer 
-    case 'Confirm'
-        set(handles.Radial_Reconstruction_App, 'HandleVisibility', 'off'); % keeps this gui from being closed
-        pa = findobj('Tag','phantom_app');
-        if ~isempty(pa)
-            set(pa, 'HandleVisibility', 'off'); % keeps phantom app from being closed
-        end
-        close all;
-        set(handles.Radial_Reconstruction_App, 'HandleVisibility', 'on');
-        if ~isempty(pa)
-            set(pa, 'HandleVisibility', 'on');
-        end
-        drawnow;
-end
-
-
-%% select folder to be used
-% --- Executes on button press in choose_file.
-function choose_file_Callback(hObject, eventdata, handles)
-% hObject    handle to choose_file (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-    handles.data_path = uigetdir('../');
-    if isequal(handles.data_path, 0) % check whether user pressed cancel
-        return
-    end
-    [~, folder] = fileparts(handles.data_path);
-    set(handles.folder_display, 'String', folder);
-    guidata(hObject, handles);   % Store handles
-
-
-%% allows option for command line errors to be shown in popup instead
-% --- Executes on button press in show_errors.
-function show_errors_Callback(hObject, eventdata, handles)
-% hObject    handle to show_errors (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-% Hint: get(hObject,'Value') returns toggle state of show_errors
-
-
-
-%% For debugging purposes
-% --- Executes on button press in pushbutton5.
-function pushbutton5_Callback(hObject, eventdata, handles)
-% hObject    handle to pushbutton5 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-keyboard
-
 %% batch run of subfolders in folder
 % --- Executes on button press in batch_run.
 function batch_run_Callback(hObject, eventdata, handles)
@@ -223,15 +165,17 @@ for ii = 1:length(subFolders)
         set(handles.pause, 'String', 'Continue');
         add_string_gui(handles, [newline 'paused']);
         uicontrol(handles.pause);
+        % wait until unpaused
         while ~handles.continue
             % quit, if selected
             if handles.quit_batch
-                % reset everything and quit
                 reset_gui(handles, hObject);
                 handles.data_path = folder_path;
                 handles.quit_batch = false;
                 guidata(hObject, handles);
-                close(wbar);
+                if ishandle(wbar)
+                    close(wbar);
+                end
                 add_string_gui(handles, 'Batch job aborted');
                 return;
             end
@@ -261,20 +205,21 @@ for ii = 1:length(subFolders)
     end
     
     % if waitbar still on screen, update it
-    try
+    if ishandle(wbar)
         waitbar(ii/length(subFolders), wbar, ...
         sprintf('Completed %d out of %d reconstructions', ii, length(subFolders)));
         figure(wbar);
-    catch
     end
 end
 add_string_gui(handles, 'done.')
 
 % clean up
 reset_gui(handles, hObject);
-close(wbar)
 handles.data_path = folder_path;
 guidata(hObject, handles);
+if ishandle(wbar)
+    close(wbar);
+end
 figure(handles.Radial_Reconstruction_App);
 
 %% Pauses/unpauses batch run
@@ -324,6 +269,55 @@ set(handles.pause, 'String', 'canceling...');
 set(handles.cancel_batch, 'String', 'canceling...');
 add_string_gui(handles, [newline 'Canceling after current reconstruction ...' newline]);
 guidata(hObject, handles);
+
+
+%% closes all open figures
+% --- Executes on button press in close_all.
+function close_all_Callback(hObject, eventdata, handles)
+% hObject    handle to close_all (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% ask user to confirm closing, close if confirmed
+answer = questdlg('Close all figures?','Confirm Closing','Confirm','Cancel', 'Confirm');
+switch answer 
+    case 'Confirm'
+        set(handles.Radial_Reconstruction_App, 'HandleVisibility', 'off'); % keeps this gui from being closed
+        pa = findobj('Tag','phantom_app');
+        if ~isempty(pa)
+            set(pa, 'HandleVisibility', 'off'); % keeps phantom app from being closed
+        end
+        close all;
+        set(handles.Radial_Reconstruction_App, 'HandleVisibility', 'on');
+        if ~isempty(pa)
+            set(pa, 'HandleVisibility', 'on');
+        end
+        drawnow;
+end
+
+
+%% select folder to be used
+% --- Executes on button press in choose_file.
+function choose_file_Callback(hObject, eventdata, handles)
+% hObject    handle to choose_file (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+    handles.data_path = uigetdir('../');
+    if isequal(handles.data_path, 0) % check whether user pressed cancel
+        return
+    end
+    [~, folder] = fileparts(handles.data_path);
+    set(handles.folder_display, 'String', folder);
+    guidata(hObject, handles);   % Store handles
+
+
+%% For debugging purposes
+% --- Executes on button press in pushbutton5.
+function pushbutton5_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton5 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+keyboard
 
 
 %% return key presses appropriate button
@@ -447,10 +441,50 @@ function warn_overwrite_KeyPressFcn(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 return_press_do(hObject, eventdata, handles, handles.warn_overwrite, @toggle_switch);
 
+
 %% Toggles given switch
 function toggle_switch(swtch, ~, ~)
 set(swtch, 'Value', ~swtch.Value);
 
+
+%% opens previously performed reconstruction
+% --- Executes on button press in open_recon.
+function open_recon_Callback(hObject, eventdata, handles)
+% hObject    handle to open_recon (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+[filename, pathname] = uigetfile('../');
+if isequal(filename, 0) % check whether user pressed cancel
+    return
+end
+
+% try to load reconstruction
+try
+    vars = load([pathname filename]);
+catch
+    uiwait(errordlg('Unable to find data'));
+    return;
+end
+
+% try to load reconstruction
+if isfield(vars, 'phan_true')
+    reconstruction = vars.phan_true;
+elseif isfield(vars, 'recon_final')
+    reconstruction = vars.recon_final;
+else
+    uiwait(errordlg('unable to load reconstructed matrix (must contain variable called phan_true or recon_final'));
+    return;
+end
+
+% display reconstruction 
+try
+    addpath([fileparts(fileparts(mfilename('fullpath'))) filesep '3D Viewers' filesep 'vi']); 
+    scale = 64/length(reconstruction)*8;
+    vi(abs(reconstruction), 'aspect', [scale scale scale]);
+catch M
+    errordlg(['unable to load reconstruction:' newline M.message]);
+    rethrow(M);
+end
 
 %% basically unused create functions
 % --- Executes during object creation, after setting all properties.
@@ -499,43 +533,4 @@ function firstpt_CreateFcn(hObject, eventdata, handles)
 %       See ISPC and COMPUTER.
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
-end
-
-
-% --- Executes on button press in open_recon.
-function open_recon_Callback(hObject, eventdata, handles)
-% hObject    handle to open_recon (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-[filename, pathname] = uigetfile('../');
-if isequal(filename, 0) % check whether user pressed cancel
-    return
-end
-
-% try to load reconstruction
-try
-    vars = load([pathname filename]);
-catch
-    uiwait(errordlg('Unable to find data'));
-    return;
-end
-
-% try to load reconstruction
-if isfield(vars, 'phan_true')
-    reconstruction = vars.phan_true;
-elseif isfield(vars, 'recon_final')
-    reconstruction = vars.recon_final;
-else
-    uiwait(errordlg('unable to load reconstructed matrix (must contain variable called phan_true or recon_final'));
-    return;
-end
-
-% display reconstruction 
-try
-    addpath([fileparts(fileparts(mfilename('fullpath'))) filesep '3D Viewers' filesep 'vi']); 
-    scale = 64/length(reconstruction)*8;
-    vi(abs(reconstruction), 'aspect', [scale scale scale]);
-catch M
-    errordlg(['unable to load reconstruction:' newline M.message]);
-    rethrow(M);
 end
