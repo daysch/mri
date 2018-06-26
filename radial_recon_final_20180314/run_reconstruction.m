@@ -9,9 +9,7 @@ while exist([handles.data_path filesep handles.savename '.mat'], 'file')
     answer = timedlg('Choose new name, cancel, or leave blank to overwrite:', ...
                       'Reconstruction Already Exists', 10);
     if isequal(answer,{''}) % cancel if cancel button pressed or timed out
-        add_string_gui(handles, 'Reconstruction cancelled. Pausing for 5 seconds ....')
-        pause(5);
-        error('reconstruction already exists. Please rename reconstruction or select new name when prompted');
+        error('reconstruction already exists. Please rename reconstruction or select new name when prompted (or leave new name field blank to overwrite old reconstruction)');
     elseif isempty(answer)
         break; % overwrite reconstruction if left blank
     end
@@ -26,7 +24,6 @@ else
         radial_recon_rs2d_20180314_two_grads(handles);
     catch M
         errordlg(['Unexpected error in execution of reconstruction:' newline M.message]);
-        add_string_gui(handles, ['Unexpected error in execution of reconstruction:' newline M.message])
         rethrow(M);
     end
 end

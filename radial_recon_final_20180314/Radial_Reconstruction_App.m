@@ -22,7 +22,7 @@ function varargout = Radial_Reconstruction_App(varargin)
 
 % Edit the above text to modify the response to help Radial_Reconstruction_App
 
-% Last Modified by GUIDE v2.5 25-Jun-2018 16:57:10
+% Last Modified by GUIDE v2.5 26-Jun-2018 13:25:32
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -252,6 +252,8 @@ for ii = 1:length(subFolders)
     catch M
         processed_so_far = [processed_so_far newline string(['ERROR IN PROCESSING FOLDER ' subFolders(ii).name ':' newline, M.message newline 'Skipping...' newline])];
         set(handles.update, 'String', processed_so_far);
+        add_string_gui(handles, 'Pausing for 5 seconds ....')
+        pause(5);
     end
     
     % if waitbar still on screen, update it
@@ -429,8 +431,22 @@ function show_errors_KeyPressFcn(hObject, eventdata, handles)
 %	Character: character interpretation of the key(s) that was pressed
 %	Modifier: name(s) of the modifier key(s) (i.e., control, shift) pressed
 % handles    structure with handles and user data (see GUIDATA)
-set(handles.show_errors, 'Value', ~handles.show_errors.Value);
-return_press_do(hObject, eventdata, handles, handles.show_errors, @show_errors_Callback);
+return_press_do(hObject, eventdata, handles, handles.show_errors, @toggle_switch);
+
+% --- Executes on key press with focus on warn_overwrite and none of its controls.
+function warn_overwrite_KeyPressFcn(hObject, eventdata, handles)
+% hObject    handle to warn_overwrite (see GCBO)
+% eventdata  structure with the following fields (see MATLAB.UI.CONTROL.UICONTROL)
+%	Key: name of the key that was pressed, in lower case
+%	Character: character interpretation of the key(s) that was pressed
+%	Modifier: name(s) of the modifier key(s) (i.e., control, shift) pressed
+% handles    structure with handles and user data (see GUIDATA)
+return_press_do(hObject, eventdata, handles, handles.warn_overwrite, @toggle_switch);
+
+%% Toggles given switch
+function toggle_switch(swtch, ~, ~)
+set(swtch, 'Value', ~swtch.Value);
+
 
 %% basically unused create functions
 % --- Executes during object creation, after setting all properties.
@@ -519,3 +535,7 @@ catch M
     errordlg(['unable to load reconstruction:' newline M.message]);
     rethrow(M);
 end
+
+
+
+
