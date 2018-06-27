@@ -4,6 +4,8 @@
 % University of Texas Southwestern Medical Center
 % Department of Radiation Oncology
 % Last edited: 08/19/2014
+% Added 6/2018:
+% - Colorbar defaults to b+w - lock aspect ratio checkbox
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 function varargout = vi(varargin)
