@@ -5,7 +5,7 @@
 % time), firstpt_val (first usable point of data), numpts_val (either NaN
 % or the number of points to use), and recon_matrix_size_val (the size of
 % the matrix to be made).
-function radial_recon_rs2d_20180314_two_grads(handles)
+function recon_final = radial_recon_rs2d_20180314_two_grads(handles)
     if nargin == 0
         clear % clears the workspace when called from the command line without arguments
     end
@@ -275,19 +275,13 @@ function radial_recon_rs2d_20180314_two_grads(handles)
     blur_comp_array = blur_compensation(recon_matrix_size);
 
     recon_final = first_recon./blur_comp_array;
-    %% Plotting
 
-    disp('Plotting results .... ')
-    if nargin == 1
-        add_string_gui(handles, 'Plotting results .... ');
+    %% show phantom, if called on command line
+    if nargin == 0
+        disp('Plotting results .... ');
+        display_reconstruction(recon_final, recon_matrix_size);
     end
-
-    %figure; imshow3Dfull(abs(recon_final));
-    addpath([fileparts(fileparts(mfilename('fullpath'))) filesep '3D Viewers' filesep 'vi']); 
-    scale = 64/recon_matrix_size*8;
-    vi(abs(recon_final), 'aspect', [scale scale scale]);
     
-
     %% Save data
     disp('Saving ....')
     if nargin == 1
@@ -317,13 +311,6 @@ function radial_recon_rs2d_20180314_two_grads(handles)
     save([fileparts(fileparts(mfilename('fullpath'))) filesep 'phantom_create' filesep 'workspace'], ... 
         'npts', 'nspokes', 'data_grads_full', 'x_grad', 'y_grad', 'z_grad');
     
-    
     % save reconstruction
     save([data_path filesep handles.savename], 'recon_final');
-    
-    disp('Done.')
-    if nargin == 1
-        add_string_gui(handles, 'Done.');
-    end
-
 end

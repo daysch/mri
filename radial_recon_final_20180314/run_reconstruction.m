@@ -9,7 +9,7 @@ while handles.warn_overwrite.Value && exist([handles.data_path filesep handles.s
     answer = timedlg('Choose new name, cancel, or leave blank to overwrite:', ...
                       'Reconstruction Already Exists', 10);
     if isequal(answer,{''}) % cancel if cancel button pressed or timed out
-        error('reconstruction already exists. Please rename reconstruction or select new name when prompted (or leave new name field blank to overwrite old reconstruction)');
+        error('reconstruction already exists. Please rename reconstruction or select new name when prompted (or press Submit with new name field blank to overwrite old reconstruction)');
     elseif isempty(answer)
         break; % overwrite reconstruction if left blank
     end
@@ -17,13 +17,12 @@ while handles.warn_overwrite.Value && exist([handles.data_path filesep handles.s
 end
 
 % run reconstruction. inform gui user of errors (if desired)
-if ~get(handles.show_errors, 'Value')
-    radial_recon_rs2d_20180314_two_grads(handles);
-else
-    try
-        radial_recon_rs2d_20180314_two_grads(handles);
-    catch M
+try
+    recon_final = radial_recon_rs2d_20180314_two_grads(handles);
+    display_reconstruction(recon_final, handles.recon_matrix_size_val, handles);
+catch M
+    if get(handles.show_errors, 'Value')
         errordlg(['Unexpected error in execution of reconstruction:' newline M.message]);
-        rethrow(M);
     end
+    rethrow(M);
 end
