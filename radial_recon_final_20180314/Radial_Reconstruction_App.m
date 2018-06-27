@@ -302,7 +302,7 @@ function choose_file_Callback(hObject, eventdata, handles)
 % hObject    handle to choose_file (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-    handles.data_path = uigetdir('../');
+    handles.data_path = uigetdir;
     if isequal(handles.data_path, 0) % check whether user pressed cancel
         return
     end
@@ -453,7 +453,7 @@ function open_recon_Callback(hObject, eventdata, handles)
 % hObject    handle to open_recon (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-[filename, pathname] = uigetfile('../');
+[filename, pathname] = uigetfile;
 if isequal(filename, 0) % check whether user pressed cancel
     return
 end
@@ -478,9 +478,14 @@ end
 
 % display reconstruction 
 try
+    % display figure
     addpath([fileparts(fileparts(mfilename('fullpath'))) filesep '3D Viewers' filesep 'vi']); 
     scale = 64/length(reconstruction)*8;
-    vi(abs(reconstruction), 'aspect', [scale scale scale]);
+    fig = vi(abs(reconstruction), 'aspect', [scale scale scale]);
+    
+    % change figure title
+    [~, figname] = fileparts(pathname(1:end-1)); % strips away filesep to treat folder as filename
+    set(fig, 'Name', [figname filesep filename]);
 catch M
     errordlg(['unable to load reconstruction:' newline M.message]);
     rethrow(M);

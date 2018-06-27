@@ -19,7 +19,10 @@ end
 % run reconstruction. inform gui user of errors (if desired)
 try
     recon_final = radial_recon_rs2d_20180314_two_grads(handles);
-    display_reconstruction(recon_final, handles.recon_matrix_size_val, handles);
+    
+    add_string_gui(handles, 'Displaying results .... ');
+    [~, folder] = fileparts(handles.data_path);
+    display_reconstruction(recon_final, handles.recon_matrix_size_val, [folder filesep handles.savename '.mat']);
 catch M
     if get(handles.show_errors, 'Value')
         errordlg(['Unexpected error in execution of reconstruction:' newline M.message]);

@@ -118,7 +118,10 @@ try
     % display original phantom
     if get(handles.disp_phan, 'Value') 
         addpath([fileparts(fileparts(mfilename('fullpath'))) filesep '3D Viewers' filesep 'vi']); 
-        vi(abs(phan_true), 'aspect', [5 5 5]);
+        fig = vi(abs(phan_true), 'aspect', [5 5 5]);
+        
+         % change figure title
+        set(fig, 'Name', [folder filesep 'phan_true.mat']);
     end
     add_string_gui(handles, ['done' newline newline newline]);
 catch M
@@ -563,7 +566,7 @@ function open_recon_Callback(hObject, eventdata, handles)
 % hObject    handle to open_recon (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-[filename, pathname] = uigetfile('../');
+[filename, pathname] = uigetfile;
 if isequal(filename, 0) % check whether user pressed cancel
     return
 end
@@ -590,7 +593,11 @@ end
 try
     addpath([fileparts(fileparts(mfilename('fullpath'))) filesep '3D Viewers' filesep 'vi']); 
     scale = 64/length(reconstruction)*8;
-    vi(abs(reconstruction), 'aspect', [scale scale scale]);
+    fig = vi(abs(reconstruction), 'aspect', [scale scale scale]);
+    
+    % change figure title
+    [~, figname] = fileparts(pathname(1:end-1)); % strips away filesep to treat folder as filename
+    set(fig, 'Name', [figname filesep filename]);
 catch M
     errordlg(['unable to load reconstruction:' newline M.message]);
     rethrow(M);
