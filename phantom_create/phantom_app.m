@@ -1,3 +1,4 @@
+%% main phantom app code
 function varargout = phantom_app(varargin)
 % PHANTOM_APP MATLAB code for phantom_app.fig
 %      PHANTOM_APP, by itself, creates a new PHANTOM_APP or raises the existing

@@ -4,7 +4,7 @@
 % University of Texas Southwestern Medical Center
 % Department of Radiation Oncology
 % Last edited: 08/19/2014
-% Added 6/2018:
+% Added 6/2018 (David Schoenberg):
 % - Colorbar defaults to b+w - lock aspect ratio checkbox
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -32,7 +32,7 @@ function varargout = vi(varargin)
 
 % Edit the above text to modify the response to help vi
 
-% Last Modified by GUIDE v2.5 27-Jun-2018 12:39:34
+% Last Modified by GUIDE v2.5 27-Jun-2018 14:30:18
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 0;
@@ -2224,12 +2224,3 @@ function mi_regionDrawn_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 select_region_type(handles, 'Drawn');
-
-
-% --- Executes on button press in lock_ratio.
-function lock_ratio_Callback(hObject, eventdata, handles)
-% hObject    handle to lock_ratio (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hint: get(hObject,'Value') returns toggle state of lock_ratio
