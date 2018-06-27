@@ -32,7 +32,7 @@ function varargout = vi(varargin)
 
 % Edit the above text to modify the response to help vi
 
-% Last Modified by GUIDE v2.5 27-Jun-2018 16:33:05
+% Last Modified by GUIDE v2.5 27-Jun-2018 17:58:40
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 0;
@@ -119,7 +119,9 @@ if 2 == numDims % 2D images don't need these uicontrols.
         handles.slider_ySliceNo, ...
         handles.slider_zSliceNo, ...
         handles.edit_sliceNo, ...
-        handles.slider_sliceNo], ...
+        handles.slider_sliceNo, ...
+        handles.reset_rotate, ...
+        handles.rotate_img], ...
         'Enable', 'off');
     set(handles.slider_sliceNo, 'Max', 1, 'Min', 0, 'SliderStep', [0.1 0.1]);
 elseif 3 == numDims % 3D images need multiple views, rotation, etc.
@@ -133,7 +135,9 @@ elseif 3 == numDims % 3D images need multiple views, rotation, etc.
         handles.slider_ySliceNo, ...
         handles.slider_zSliceNo, ...
         handles.edit_sliceNo, ...
-        handles.slider_sliceNo], ...
+        handles.slider_sliceNo, ...
+        handles.reset_rotate, ...
+        handles.rotate_img], ...
         'Enable', 'on');
     set(handles.slider_xSliceNo, 'Max', imgSize(2), 'Min', 1, 'SliderStep', [1/(imgSize(2)-1) 10/(imgSize(2)-1)]);
     set(handles.slider_ySliceNo, 'Max', imgSize(1), 'Min', 1, 'SliderStep', [1/(imgSize(1)-1) 10/(imgSize(1)-1)]);
@@ -2256,37 +2260,47 @@ if length(ax) ~= 3 || any(isnan(ax))
 end
 
 % perform rotation
-f= msgbox(['rotating...' newline 'this window will close when complete']);
+f= msgbox(['rotating...' newline 'warning: rotating distorts image slightly. Click reset to restore to original' newline 'this window will close when complete']);
 prev_img = getappdata(handles.figure_vi, 'imgData');
 img = rotImg3(prev_img, angle, ax);
+image_rotation_change(img, handles)
 close(f);
 
-% update image and show rotation
-imgSize = size(img);
-set(handles.slider_xSliceNo, 'Max', imgSize(2), 'Min', 1, 'SliderStep', [1/(imgSize(2)-1) 10/(imgSize(2)-1)]);
-set(handles.slider_ySliceNo, 'Max', imgSize(1), 'Min', 1, 'SliderStep', [1/(imgSize(1)-1) 10/(imgSize(1)-1)]);
-set(handles.slider_zSliceNo, 'Max', imgSize(3), 'Min', 1, 'SliderStep', [1/(imgSize(3)-1) 10/(imgSize(3)-1)]);
-    sliceNo3d = ceil(imgSize / 2); % Initially display center slices.
-    sliceNo3d = sliceNo3d([2 1 3]); % Reorder as [x y z].
-setappdata(handles.figure_vi, 'sliceNo3d', sliceNo3d);
-set(handles.slider_xSliceNo, 'Value', sliceNo3d(1));
-set(handles.slider_ySliceNo, 'Value', sliceNo3d(2));
-set(handles.slider_zSliceNo, 'Value', sliceNo3d(3));
-set(handles.slider_sliceNo, 'Min', 1);
-setappdata(handles.figure_vi, 'imgData', img);
-setappdata(handles.figure_vi, 'imgSize', imgSize);
-setappdata(handles.figure_vi, 'hSlices', []);
-
-viewType = get_view_type(handles);
-update_view_type(handles);
-if viewType == 4
-    sliceNo3d = ceil(imgSize / 2); % Initially display center slices.
-    sliceNo3d = sliceNo3d([2 1 3]); % Reorder as [x y z].
-    xSliceNo = sliceNo3d(1);
-    ySliceNo = sliceNo3d(2);
-    zSliceNo = sliceNo3d(3);
-    sliceNo3d = [0 0 0]; % Set slice to 0s to force reset
+% updates the gui to reflect image rotation
+function image_rotation_change(img, handles)
+    imgSize = size(img);
+    sliceNo3d = getappdata(handles.figure_vi, 'sliceNo3d');
+    xSliceNo = max(min(round(sliceNo3d(1)), imgSize(2)), 1);
+    ySliceNo = max(min(round(sliceNo3d(2)), imgSize(1)), 1);
+    zSliceNo = max(min(round(sliceNo3d(3)), imgSize(3)), 1);
+    sliceNo3d = [zSliceNo ySliceNo zSliceNo];
     setappdata(handles.figure_vi, 'sliceNo3d', sliceNo3d);
-    update_slice_3d(handles, xSliceNo, ySliceNo, zSliceNo, false)
-end
-auto_layout(handles);
+
+    set(handles.slider_xSliceNo, 'Max', imgSize(2), 'Min', 1, 'SliderStep', [1/(imgSize(2)-1) 10/(imgSize(2)-1)]);
+    set(handles.slider_ySliceNo, 'Max', imgSize(1), 'Min', 1, 'SliderStep', [1/(imgSize(1)-1) 10/(imgSize(1)-1)]);
+    set(handles.slider_zSliceNo, 'Max', imgSize(3), 'Min', 1, 'SliderStep', [1/(imgSize(3)-1) 10/(imgSize(3)-1)]);
+    set(handles.slider_xSliceNo, 'Value', sliceNo3d(1));
+    set(handles.slider_ySliceNo, 'Value', sliceNo3d(2));
+    set(handles.slider_zSliceNo, 'Value', sliceNo3d(3));
+    set(handles.slider_sliceNo, 'Min', 1);
+    setappdata(handles.figure_vi, 'imgData', img);
+    setappdata(handles.figure_vi, 'imgSize', imgSize);
+    setappdata(handles.figure_vi, 'hSlices', []);
+
+    viewType = get_view_type(handles);
+    update_view_type(handles);
+    if viewType == 4
+        sliceNo3d = [0 0 0]; % Set slice to 0s to force reset
+        setappdata(handles.figure_vi, 'sliceNo3d', sliceNo3d);
+        update_slice_3d(handles, xSliceNo, ySliceNo, zSliceNo, false)
+    end
+    auto_layout(handles);
+
+
+% --- Executes on button press in reset_rotate.
+function reset_rotate_Callback(hObject, eventdata, handles)
+% hObject    handle to reset_rotate (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+img = getappdata(handles.figure_vi, 'original_imgData');
+image_rotation_change(img, handles);
