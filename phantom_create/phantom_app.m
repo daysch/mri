@@ -80,59 +80,6 @@ function varargout = phantom_app_OutputFcn(hObject, eventdata, handles)
 varargout{1} = handles.output;
 
 
-%% generates the phantom data from the list of cartesian matrices of shapes
-% --- Executes on button press in generate.
-function generate_Callback(hObject, eventdata, handles)
-% hObject    handle to generate (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-pause_gui;
-
-% validate folder name
-folder = get(handles.folder_name, 'String');
-if isempty(folder)
-    uiwait(errordlg('please specify name to save as'));
-    unpause_gui;
-    uicontrol(handles.folder_name);
-    return;
-end
-if exist([fileparts(fileparts(mfilename('fullpath'))) filesep 'phantom_objects' filesep folder], 'dir')
-    answer = questdlg('A phantom with that name already exists. Overwrite phantom?', ...
-                      'Overwrite phantom?', 'Overwrite', 'Cancel', 'Cancel');
-    switch answer
-        case 'Cancel'
-            unpause_gui;
-            uicontrol(handles.folder_name);
-            return;
-    end
-end
-
-% sum up phantoms
-phan_true=cat(4, handles.real_phans{:});
-phan_true = sum(phan_true, 4);
-
-% generate phantom
-add_string_gui(handles, [newline 'generating phantom...']);
-try
-    pseudo_data_phantom(phan_true, folder, handles.recon_matrix_size, handles);
-    % display original phantom
-    if get(handles.disp_phan, 'Value') 
-        addpath([fileparts(fileparts(mfilename('fullpath'))) filesep '3D Viewers' filesep 'vi']); 
-        fig = vi(abs(phan_true), 'aspect', [5 5 5]);
-        
-         % change figure title
-        set(fig, 'Name', [folder filesep 'phan_true.mat']);
-    end
-    add_string_gui(handles, ['done' newline newline newline]);
-catch M
-    unpause_gui;
-    add_string_gui(handles, [string(''); string('UNABLE TO GENERATE PHANTOM:'); string(M.message); string(''); string(''); string('')]);
-    errordlg(['unable to generate phantom:' newline M.message]);
-end
-unpause_gui;
-
-
 %% validates and adds selected shape to list
 % --- Executes on button press in add.
 function add_Callback(hObject, eventdata, handles)
@@ -236,6 +183,59 @@ add_string_gui(handles, [string('removed shape:'); old_list(index, :)]);
 guidata(hObject, handles);
 
 
+%% generates the phantom data from the list of cartesian matrices of shapes
+% --- Executes on button press in generate.
+function generate_Callback(hObject, eventdata, handles)
+% hObject    handle to generate (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+pause_gui;
+
+% validate folder name
+folder = get(handles.folder_name, 'String');
+if isempty(folder)
+    uiwait(errordlg('please specify name to save as'));
+    unpause_gui;
+    uicontrol(handles.folder_name);
+    return;
+end
+if exist([fileparts(fileparts(mfilename('fullpath'))) filesep 'phantom_objects' filesep folder], 'dir')
+    answer = questdlg('A phantom with that name already exists. Overwrite phantom?', ...
+                      'Overwrite phantom?', 'Overwrite', 'Cancel', 'Cancel');
+    switch answer
+        case 'Cancel'
+            unpause_gui;
+            uicontrol(handles.folder_name);
+            return;
+    end
+end
+
+% sum up phantoms
+phan_true=cat(4, handles.real_phans{:});
+phan_true = sum(phan_true, 4);
+
+% generate phantom
+add_string_gui(handles, [newline 'generating phantom...']);
+try
+    pseudo_data_phantom(phan_true, folder, handles.recon_matrix_size, handles);
+    % display original phantom
+    if get(handles.disp_phan, 'Value') 
+        addpath([fileparts(fileparts(mfilename('fullpath'))) filesep '3D Viewers' filesep 'vi']); 
+        fig = vi(abs(phan_true), 'aspect', [5 5 5]);
+        
+         % change figure title
+        set(fig, 'Name', [folder filesep 'phan_true.mat']);
+    end
+    add_string_gui(handles, ['done' newline newline newline]);
+catch M
+    unpause_gui;
+    add_string_gui(handles, [string(''); string('UNABLE TO GENERATE PHANTOM:'); string(M.message); string(''); string(''); string('')]);
+    errordlg(['unable to generate phantom:' newline M.message]);
+end
+unpause_gui;
+
+
 %% clears update box
 % --- Executes on button press in clear_updates.
 function clear_updates_Callback(hObject, eventdata, handles)
@@ -247,7 +247,6 @@ set(handles.update, 'String', string(''));
 
 %% functions to use return key to add/remove/generate
 
-% --- Executes on key press with focus on x_offset and none of its controls.
 % --- Executes on key press with focus on phan_type and none of its controls.
 function phan_type_KeyPressFcn(hObject, eventdata, handles)
 % hObject    handle to phan_type (see GCBO)
@@ -258,6 +257,7 @@ function phan_type_KeyPressFcn(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 return_press_do(hObject, eventdata, handles, handles.x_offset, @NOP);
 
+% --- Executes on key press with focus on x_offset and none of its controls.
 function x_offset_KeyPressFcn(hObject, eventdata, handles)
 % hObject    handle to x_offset (see GCBO)
 % eventdata  structure with the following fields (see MATLAB.UI.CONTROL.UICONTROL)

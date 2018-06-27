@@ -32,7 +32,7 @@ function varargout = vi(varargin)
 
 % Edit the above text to modify the response to help vi
 
-% Last Modified by GUIDE v2.5 27-Jun-2018 14:30:18
+% Last Modified by GUIDE v2.5 27-Jun-2018 16:33:05
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 0;
@@ -68,6 +68,9 @@ handles.output = hObject;
 
 % Update handles structure
 guidata(hObject, handles);
+
+% load path for 3d rotation
+addpath([fileparts(fileparts(fileparts(mfilename('fullpath')))) filesep '3dRotation']);
 
 % UIWAIT makes vi wait for user response (see UIRESUME)
 % uiwait(handles.figure_vi);
@@ -145,12 +148,13 @@ elseif 3 == numDims % 3D images need multiple views, rotation, etc.
 end
 
 setappdata(handles.figure_vi, 'imgData', img);
+setappdata(handles.figure_vi, 'original_imgData', img); % added - David
 setappdata(handles.figure_vi, 'imgSize', imgSize);
 setappdata(handles.figure_vi, 'numDims', numDims);
 
 cb = colorbar('peer', handles.axes_colorBar, 'location', 'west');
 setappdata(handles.figure_vi, 'colorBar', cb);
-colormap('gray') % added by Davey
+colormap('gray') % added by David
 
 % Get number string format.
 if isinteger(img) || islogical(img)
@@ -2224,3 +2228,65 @@ function mi_regionDrawn_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 select_region_type(handles, 'Drawn');
+
+
+% --- Executes on button press in rotate_img.
+function rotate_img_Callback(hObject, eventdata, handles)
+% hObject    handle to rotate_img (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% get parameters for rotation
+prompt = {'Angle of rotation (radians):','axis of rotation (format: x y z)'};
+title = 'Rotate Image';
+answer = inputdlg(prompt,title);
+
+% get and check paramaters
+if isempty(answer)
+    return;
+end
+angle = str2num(answer{1});
+if length(angle) ~= 1 || isnan(angle)
+    errordlg('please input valid angle');
+end
+ax = strsplit(answer{2});
+ax = str2double(ax);
+if length(ax) ~= 3 || any(isnan(ax))
+    errordlg('please input valid vector in the format: x y z');
+end
+
+% perform rotation
+f= msgbox(['rotating...' newline 'this window will close when complete']);
+prev_img = getappdata(handles.figure_vi, 'imgData');
+img = rotImg3(prev_img, angle, ax);
+close(f);
+
+% update image and show rotation
+imgSize = size(img);
+set(handles.slider_xSliceNo, 'Max', imgSize(2), 'Min', 1, 'SliderStep', [1/(imgSize(2)-1) 10/(imgSize(2)-1)]);
+set(handles.slider_ySliceNo, 'Max', imgSize(1), 'Min', 1, 'SliderStep', [1/(imgSize(1)-1) 10/(imgSize(1)-1)]);
+set(handles.slider_zSliceNo, 'Max', imgSize(3), 'Min', 1, 'SliderStep', [1/(imgSize(3)-1) 10/(imgSize(3)-1)]);
+    sliceNo3d = ceil(imgSize / 2); % Initially display center slices.
+    sliceNo3d = sliceNo3d([2 1 3]); % Reorder as [x y z].
+setappdata(handles.figure_vi, 'sliceNo3d', sliceNo3d);
+set(handles.slider_xSliceNo, 'Value', sliceNo3d(1));
+set(handles.slider_ySliceNo, 'Value', sliceNo3d(2));
+set(handles.slider_zSliceNo, 'Value', sliceNo3d(3));
+set(handles.slider_sliceNo, 'Min', 1);
+setappdata(handles.figure_vi, 'imgData', img);
+setappdata(handles.figure_vi, 'imgSize', imgSize);
+setappdata(handles.figure_vi, 'hSlices', []);
+
+viewType = get_view_type(handles);
+update_view_type(handles);
+if viewType == 4
+    sliceNo3d = ceil(imgSize / 2); % Initially display center slices.
+    sliceNo3d = sliceNo3d([2 1 3]); % Reorder as [x y z].
+    xSliceNo = sliceNo3d(1);
+    ySliceNo = sliceNo3d(2);
+    zSliceNo = sliceNo3d(3);
+    sliceNo3d = [0 0 0]; % Set slice to 0s to force reset
+    setappdata(handles.figure_vi, 'sliceNo3d', sliceNo3d);
+    update_slice_3d(handles, xSliceNo, ySliceNo, zSliceNo, false)
+end
+auto_layout(handles);
