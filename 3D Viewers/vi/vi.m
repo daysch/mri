@@ -30,7 +30,7 @@ function varargout = vi(varargin)
 
 % Edit the above text to modify the response to help vi
 
-% Last Modified by GUIDE v2.5 19-Aug-2014 13:59:42
+% Last Modified by GUIDE v2.5 27-Jun-2018 12:39:34
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 0;
@@ -148,6 +148,7 @@ setappdata(handles.figure_vi, 'numDims', numDims);
 
 cb = colorbar('peer', handles.axes_colorBar, 'location', 'west');
 setappdata(handles.figure_vi, 'colorBar', cb);
+colormap('gray') % added by Davey
 
 % Get number string format.
 if isinteger(img) || islogical(img)
@@ -1638,6 +1639,10 @@ function edit_zAspectRatio_Callback(hObject, eventdata, handles)
 
 aspectRatio = getappdata(handles.figure_vi, 'aspectRatio');
 aspectRatio(3) = str2double(get(hObject, 'String'));
+if handles.lock_ratio.Value
+    aspectRatio(1) = str2double(get(hObject, 'String'));
+    aspectRatio(2) = str2double(get(hObject, 'String'));
+end
 setappdata(handles.figure_vi, 'aspectRatio', aspectRatio);
 update_aspect_ratio(handles);
 auto_layout(handles);
@@ -1667,6 +1672,10 @@ function edit_yAspectRatio_Callback(hObject, eventdata, handles)
 
 aspectRatio = getappdata(handles.figure_vi, 'aspectRatio');
 aspectRatio(2) = str2double(get(hObject, 'String'));
+if handles.lock_ratio.Value
+    aspectRatio(1) = str2double(get(hObject, 'String'));
+    aspectRatio(3) = str2double(get(hObject, 'String'));
+end
 setappdata(handles.figure_vi, 'aspectRatio', aspectRatio);
 update_aspect_ratio(handles);
 auto_layout(handles);
@@ -1696,6 +1705,10 @@ function edit_xAspectRatio_Callback(hObject, eventdata, handles)
 
 aspectRatio = getappdata(handles.figure_vi, 'aspectRatio');
 aspectRatio(1) = str2double(get(hObject, 'String'));
+if handles.lock_ratio.Value
+    aspectRatio(2) = str2double(get(hObject, 'String'));
+    aspectRatio(3) = str2double(get(hObject, 'String'));
+end
 setappdata(handles.figure_vi, 'aspectRatio', aspectRatio);
 update_aspect_ratio(handles);
 auto_layout(handles);
@@ -2209,3 +2222,12 @@ function mi_regionDrawn_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 select_region_type(handles, 'Drawn');
+
+
+% --- Executes on button press in lock_ratio.
+function lock_ratio_Callback(hObject, eventdata, handles)
+% hObject    handle to lock_ratio (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of lock_ratio
