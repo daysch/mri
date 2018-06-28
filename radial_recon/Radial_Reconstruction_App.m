@@ -334,7 +334,7 @@ function prepts_KeyPressFcn(hObject, eventdata, handles)
 %	Character: character interpretation of the key(s) that was pressed
 %	Modifier: name(s) of the modifier key(s) (i.e., control, shift) pressed
 % handles    structure with handles and user data (see GUIDATA)
-return_press_do(hObject, eventdata, handles, handles.run, @run_Callback);
+return_press_do(hObject, eventdata, handles, handles.firstpt, @NOP);
 
 % --- Executes on key press with focus on firstpt and none of its controls.
 function firstpt_KeyPressFcn(hObject, eventdata, handles)
@@ -344,7 +344,7 @@ function firstpt_KeyPressFcn(hObject, eventdata, handles)
 %	Character: character interpretation of the key(s) that was pressed
 %	Modifier: name(s) of the modifier key(s) (i.e., control, shift) pressed
 % handles    structure with handles and user data (see GUIDATA)
-return_press_do(hObject, eventdata, handles, handles.run, @run_Callback);
+return_press_do(hObject, eventdata, handles, handles.numpts, @NOP);
 
 % --- Executes on key press with focus on numpts and none of its controls.
 function numpts_KeyPressFcn(hObject, eventdata, handles)
@@ -354,7 +354,7 @@ function numpts_KeyPressFcn(hObject, eventdata, handles)
 %	Character: character interpretation of the key(s) that was pressed
 %	Modifier: name(s) of the modifier key(s) (i.e., control, shift) pressed
 % handles    structure with handles and user data (see GUIDATA)
-return_press_do(hObject, eventdata, handles, handles.run, @run_Callback);
+return_press_do(hObject, eventdata, handles, handles.recon_matrix_size, @NOP);
 
 % --- Executes on key press with focus on recon_matrix_size and none of its controls.
 function recon_matrix_size_KeyPressFcn(hObject, eventdata, handles)
@@ -364,7 +364,7 @@ function recon_matrix_size_KeyPressFcn(hObject, eventdata, handles)
 %	Character: character interpretation of the key(s) that was pressed
 %	Modifier: name(s) of the modifier key(s) (i.e., control, shift) pressed
 % handles    structure with handles and user data (see GUIDATA)
-return_press_do(hObject, eventdata, handles, handles.run, @run_Callback);
+return_press_do(hObject, eventdata, handles, handles.choose_file, @NOP);
 
 % --- Executes on key press with focus on run and none of its controls.
 function run_KeyPressFcn(hObject, eventdata, handles)
@@ -384,7 +384,8 @@ function choose_file_KeyPressFcn(hObject, eventdata, handles)
 %	Character: character interpretation of the key(s) that was pressed
 %	Modifier: name(s) of the modifier key(s) (i.e., control, shift) pressed
 % handles    structure with handles and user data (see GUIDATA)
-return_press_do(hObject, eventdata, handles, handles.choose_file, @choose_file_Callback);
+return_press_do(hObject, eventdata, handles, handles.run, @choose_file_Callback);
+uicontrol(handles.run);
 
 % --- Executes on key press with focus on batch_run and none of its controls.
 function batch_run_KeyPressFcn(hObject, eventdata, handles)
