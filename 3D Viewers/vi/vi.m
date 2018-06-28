@@ -2268,7 +2268,7 @@ f= msgbox(['WARNING: rotating distorts image slightly. It may also add or remove
            newline newline 'This window will close when rotation is complete.'], 'Rotating...');
 prev_img = getappdata(handles.figure_vi, 'imgData');
 try
-    img = rotImg3(prev_img, angle, ax);
+    img = rotImg3(prev_img, angle, ax([2 1 3]));
 catch M
     errordlg(M.message);
     close(f);
@@ -2314,4 +2314,9 @@ function reset_rotate_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 img = getappdata(handles.figure_vi, 'original_imgData');
+imgSize = size(img);
+sliceNo3d = ceil(imgSize / 2); % Initially display center slices.
+sliceNo3d = sliceNo3d([2 1 3]); % Reorder as [x y z].
+setappdata(handles.figure_vi, 'sliceNo3d', sliceNo3d);
+image_rotation_change(img, handles);
 image_rotation_change(img, handles);
