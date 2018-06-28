@@ -23,7 +23,7 @@ function varargout = phantom_app(varargin)
 
 % Edit the above text to modify the response to help phantom_app
 
-% Last Modified by GUIDE v2.5 25-Jun-2018 16:57:06
+% Last Modified by GUIDE v2.5 28-Jun-2018 11:41:33
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -58,6 +58,14 @@ handles.output = hObject;
 
 % set up constants
 handles.recon_matrix_size = 64;
+
+% load paths for 3d viewing/rotation
+if ~exist('3D Rotation', 'dir')
+    addpath([fileparts(fileparts(mfilename('fullpath'))) filesep '3dRotation']);
+end
+if ~exist('vi', 'dir')
+    addpath([fileparts(fileparts(mfilename('fullpath'))) filesep '3D Viewers' filesep 'vi']); 
+end
 
 % set up variables/gui
 handles.real_phans = {};
@@ -99,6 +107,7 @@ catch M
         case 'known error'
             return;
         otherwise
+            uiwait(errordlg(M.message));
             rethrow(M);
     end
 end
@@ -112,8 +121,14 @@ switch get(handles.phan_type, 'Value')
 end
 
 % generate phantom matrix
-new_phan = phantom_mhd_new(handles.recon_matrix_size, phan_type_val, phan_extent_val, ...
-                           phan_offset_val, intensity_val);
+try
+    new_phan = phantom_mhd_new(handles.recon_matrix_size, phan_type_val, phan_extent_val, ...
+                               phan_offset_val, intensity_val, rotAng, rotDir);
+catch M
+    uiwait(errordlg(['unable to generate phantom:' newline M.message]));
+    unpause_gui;
+    rethrow(M);
+end
 
 % save phantom matrix
 old_list = get(handles.phan_list, 'String');
@@ -232,6 +247,7 @@ catch M
     unpause_gui;
     add_string_gui(handles, [string(''); string('UNABLE TO GENERATE PHANTOM:'); string(M.message); string(''); string(''); string('')]);
     errordlg(['unable to generate phantom:' newline M.message]);
+    rethrow(M);
 end
 unpause_gui;
 
@@ -592,7 +608,6 @@ end
 
 % display reconstruction 
 try
-    addpath([fileparts(fileparts(mfilename('fullpath'))) filesep '3D Viewers' filesep 'vi']); 
     scale = 64/length(reconstruction)*8;
     fig = vi(abs(reconstruction), 'aspect', [scale scale scale]);
     
@@ -602,4 +617,52 @@ try
 catch M
     errordlg(['unable to load reconstruction:' newline M.message]);
     rethrow(M);
+end
+
+% --- Executes during object creation, after setting all properties.
+function angle_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to angle (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+% --- Executes during object creation, after setting all properties.
+function zDir_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to zDir (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+% --- Executes during object creation, after setting all properties.
+function yDir_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to yDir (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+% --- Executes during object creation, after setting all properties.
+function xDir_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to xDir (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
 end

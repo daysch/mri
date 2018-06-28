@@ -1,4 +1,4 @@
-function [ im ] = rotImg3( img, teta, ax, method, pad )
+function [ im ] = rotImg3( img, teta, ax, method, pad, shrink )
 %rotImg3 rotates 3 image
 % --- Syntax
 %   [ im ] = rotImg3( img, teta, ax, method )
@@ -27,6 +27,10 @@ end
 if teta == 0
     im = img;
     return;
+end
+
+if ~exist('shrink', 'var')
+    shrink = true;
 end
 
 sz = size(img);
@@ -66,8 +70,10 @@ imagerotF = interp3(imagepad, yout, xout, zout, method);
 im = reshape(imagerotF, size(imagepad));
 
 %shrink image to use minimal size
-idx=find(abs(im)>0);
-[mx, my, mz] = ind2sub(size(im), idx);
-im = im(min(mx):max(mx), min(my):max(my), min(mz):max(mz));
+if shrink
+    idx=find(abs(im)>0);
+    [mx, my, mz] = ind2sub(size(im), idx);
+    im = im(min(mx):max(mx), min(my):max(my), min(mz):max(mz));
+end
 
 end

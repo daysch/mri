@@ -59,6 +59,11 @@ handles.output = hObject;
 handles.continue = true;
 handles.quit_batch = false;
 
+% load paths for 3d viewing/rotation
+if ~exist('vi', 'dir')
+    addpath([fileparts(fileparts(mfilename('fullpath'))) filesep '3D Viewers' filesep 'vi']); 
+end
+
 % Update handles structure
 guidata(hObject, handles);
 
@@ -479,7 +484,6 @@ end
 % display reconstruction 
 try
     % display figure
-    addpath([fileparts(fileparts(mfilename('fullpath'))) filesep '3D Viewers' filesep 'vi']); 
     scale = 64/length(reconstruction)*8;
     fig = vi(abs(reconstruction), 'aspect', [scale scale scale]);
     

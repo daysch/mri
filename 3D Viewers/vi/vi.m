@@ -70,8 +70,10 @@ handles.output = hObject;
 guidata(hObject, handles);
 
 % load path for 3d rotation
-addpath([fileparts(fileparts(fileparts(mfilename('fullpath')))) filesep '3dRotation']);
-
+if ~exist('3D Rotation', 'dir')
+    addpath([fileparts(fileparts(fileparts(mfilename('fullpath')))) filesep '3dRotation']);
+end
+    
 % UIWAIT makes vi wait for user response (see UIRESUME)
 % uiwait(handles.figure_vi);
 
@@ -2250,19 +2252,28 @@ if isempty(answer)
     return;
 end
 angle = str2num(answer{1});
-if length(angle) ~= 1 || isnan(angle)
+if length(angle) ~= 1 || isnan(angle) || isinf(angle)
     errordlg('please input valid angle');
+    return;
 end
 ax = strsplit(answer{2});
 ax = str2double(ax);
 if length(ax) ~= 3 || any(isnan(ax))
     errordlg('please input valid vector in the format: x y z');
+    return;
 end
 
 % perform rotation
-f= msgbox(['rotating...' newline 'warning: rotating distorts image slightly. Click reset to restore to original' newline 'this window will close when complete']);
+f= msgbox(['WARNING: rotating distorts image slightly. It may also add or remove black border arounf image. Click Reset to restore to original' ...
+           newline newline 'This window will close when rotation is complete.'], 'Rotating...');
 prev_img = getappdata(handles.figure_vi, 'imgData');
-img = rotImg3(prev_img, angle, ax);
+try
+    img = rotImg3(prev_img, angle, ax);
+catch M
+    errordlg(M.message);
+    close(f);
+    rethrow(M);
+end
 image_rotation_change(img, handles)
 close(f);
 
