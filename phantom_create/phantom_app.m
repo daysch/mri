@@ -244,21 +244,30 @@ phan_true = sum(phan_true, 4);
 add_string_gui(handles, [newline 'generating phantom...']);
 try
     pseudo_data_phantom(phan_true, folder, handles.recon_matrix_size, handles);
-    % display original phantom
-    if get(handles.disp_phan, 'Value') 
-        add_string_gui(handles, 'loading phantom ...');
-        fig = vi(abs(phan_true), 'aspect', [5 5 5]);
-        
-         % change figure title
-        set(fig, 'Name', [folder filesep 'phan_true.mat']);
-    end
-    add_string_gui(handles, ['done' newline newline newline]);
 catch M
     unpause_gui;
     add_string_gui(handles, [string(''); string('UNABLE TO GENERATE PHANTOM:'); string(M.message); string(''); string(''); string('')]);
     errordlg(['unable to generate phantom:' newline M.message]);
     rethrow(M);
 end
+
+if get(handles.disp_phan, 'Value') 
+    try
+        % display original phantom
+        add_string_gui(handles, 'loading phantom ...');
+        scale = 64/handles.recon_matrix_size*8;
+        fig = vi(abs(phan_true), 'aspect', [scale scale scale]);
+
+        % change figure title
+        set(fig, 'Name', [folder filesep 'phan_true.mat']);
+    catch M
+        unpause_gui;
+        add_string_gui(handles, [string(''); string('UNABLE TO LOAD GENERATED PHANTOM:'); string(M.message); string(''); string(''); string('')]);
+        errordlg(['unable to load generates phantom:' newline M.message]);
+        rethrow(M); 
+    end
+end
+add_string_gui(handles, ['done' newline newline newline]);
 unpause_gui;
 
 %% opens a 3D matrix dataset

@@ -2298,6 +2298,9 @@ function image_rotation_change(img, handles)
     setappdata(handles.figure_vi, 'imgData', img);
     setappdata(handles.figure_vi, 'imgSize', imgSize);
     setappdata(handles.figure_vi, 'hSlices', []);
+    scale = 64/max(imgSize)*8;
+    setappdata(handles.figure_vi, 'aspectRatio', [scale scale scale]);
+    update_aspect_ratio(handles)
 
     viewType = get_view_type(handles);
     update_view_type(handles);
