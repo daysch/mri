@@ -23,6 +23,7 @@ try
     add_string_gui(handles, 'Displaying results .... ');
     [~, folder] = fileparts(handles.data_path);
     display_reconstruction(recon_final, handles.recon_matrix_size_val, [folder filesep handles.savename '.mat']);
+    add_string_gui(handles, 'Done.');
 catch M
     if get(handles.show_errors, 'Value')
         errordlg(['Unexpected error in execution of reconstruction:' newline M.message]);

@@ -279,7 +279,7 @@ function recon_final = radial_recon_rs2d_20180314_two_grads(handles)
     %% show phantom, if called on command line
     if nargin == 0
         disp('Plotting results .... ');
-        display_reconstruction(recon_final, recon_matrix_size);
+        display_reconstruction(recon_final, recon_matrix_size, 'Reconstruction');
     end
     
     %% Save data
