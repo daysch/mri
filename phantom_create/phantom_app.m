@@ -23,7 +23,7 @@ function varargout = phantom_app(varargin)
 
 % Edit the above text to modify the response to help phantom_app
 
-% Last Modified by GUIDE v2.5 28-Jun-2018 14:45:31
+% Last Modified by GUIDE v2.5 28-Jun-2018 15:22:16
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -125,15 +125,15 @@ try
     new_phan = phantom_mhd_new(handles.recon_matrix_size, phan_type_val, phan_extent_val, ...
                                phan_offset_val, intensity_val, rotAng, rotDir);
 catch M
-    uiwait(errordlg(['unable to generate phantom:' newline M.message]));
+    uiwait(errordlg(['unable to generate shape:' newline M.message]));
     unpause_gui;
     rethrow(M);
 end
 
 % save phantom matrix
 old_list = get(handles.phan_list, 'String');
-addition = string(sprintf('%s_OO=[%d %d %d]_E=[%d %d %d]_I=%d', phan_type_val, ...
-                          phan_offset_val, phan_extent_val, intensity_val));
+addition = string(sprintf('%s_OO=[%d %d %d]_E=[%d %d %d]_D=[%d %d %d]_R=%.2f_I=%d', phan_type_val, ...
+                          phan_offset_val, phan_extent_val, rotDir, rotAng, intensity_val));
 add_string_gui(handles, [string('added shape:'); addition]);
                       
 if isequal(old_list(1), ' ')
@@ -147,24 +147,6 @@ guidata(hObject, handles);
 
 % clean up
 unpause_gui;
-
-
-%% removes all shapes from list
-% --- Executes on button press in clear.
-function clear_Callback(hObject, eventdata, handles)
-% hObject    handle to clear (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-answer = questdlg('Clear all shapes?','Confirm Clearing','Confirm','Cancel', 'Confirm');
-switch answer 
-    case 'Confirm'
-        handles.real_phans = {};
-        set(handles.phan_list, 'String', ' ');
-        set(handles.phan_list, 'Value', 1);
-        pause_gui;
-        unpause_gui;
-        add_string_gui(handles, [newline newline newline 'cleared shapes' newline newline newline]);
-end
 
 
 %% removes selected shape from list
@@ -196,6 +178,24 @@ end
 add_string_gui(handles, [string('removed shape:'); old_list(index, :)]);
 
 guidata(hObject, handles);
+
+
+%% removes all shapes from list
+% --- Executes on button press in clear.
+function clear_Callback(hObject, eventdata, handles)
+% hObject    handle to clear (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+answer = questdlg('Clear all shapes?','Confirm Clearing','Confirm','Cancel', 'Confirm');
+switch answer 
+    case 'Confirm'
+        handles.real_phans = {};
+        set(handles.phan_list, 'String', ' ');
+        set(handles.phan_list, 'Value', 1);
+        pause_gui;
+        unpause_gui;
+        add_string_gui(handles, [newline newline newline 'cleared shapes' newline newline newline]);
+end
 
 
 %% generates the phantom data from the list of cartesian matrices of shapes
@@ -236,7 +236,6 @@ try
     pseudo_data_phantom(phan_true, folder, handles.recon_matrix_size, handles);
     % display original phantom
     if get(handles.disp_phan, 'Value') 
-        addpath([fileparts(fileparts(mfilename('fullpath'))) filesep '3D Viewers' filesep 'vi']); 
         fig = vi(abs(phan_true), 'aspect', [5 5 5]);
         
          % change figure title
@@ -251,6 +250,53 @@ catch M
 end
 unpause_gui;
 
+%% opens a 3D matrix dataset
+% --- Executes on button press in open_recon.
+function open_recon_Callback(hObject, eventdata, handles)
+% hObject    handle to open_recon (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+[filename, pathname] = uigetfile;
+if isequal(filename, 0) % check whether user pressed cancel
+    return
+end
+
+% try to load reconstruction
+try
+    vars = load([pathname filename]);
+catch
+    uiwait(errordlg('Unable to find data'));
+    return;
+end
+
+% try to load reconstruction
+if isfield(vars, 'phan_true')
+    reconstruction = vars.phan_true;
+elseif isfield(vars, 'recon_final')
+    reconstruction = vars.recon_final;
+else
+    uiwait(errordlg('unable to load reconstructed matrix (must contain variable called phan_true or recon_final'));
+    return;
+end
+
+% display reconstruction 
+try
+    scale = 64/length(reconstruction)*8;
+    fig = vi(abs(reconstruction), 'aspect', [scale scale scale]);
+    
+    % change figure title
+    [~, figname] = fileparts(pathname(1:end-1)); % strips away filesep to treat folder as filename
+    set(fig, 'Name', [figname filesep filename]);
+catch M
+    errordlg(['unable to load reconstruction:' newline M.message]);
+    rethrow(M);
+end
+
+
+%% Toggles given switch
+function toggle_switch(swtch, ~, ~)
+set(swtch, 'Value', ~swtch.Value);
+
 
 %% clears update box
 % --- Executes on button press in clear_updates.
@@ -261,8 +307,7 @@ function clear_updates_Callback(hObject, eventdata, handles)
 set(handles.update, 'String', string(''));
 
 
-%% functions to use return key to add/remove/generate
-
+%% functions to use return key to add/remove/generate/move focus
 % --- Executes on key press with focus on phan_type and none of its controls.
 function phan_type_KeyPressFcn(hObject, eventdata, handles)
 % hObject    handle to phan_type (see GCBO)
@@ -464,6 +509,16 @@ function disp_phan_KeyPressFcn(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 return_press_do(hObject, eventdata, handles, handles.disp_phan, @toggle_switch);
 
+% --- Executes on key press with focus on open_recon and none of its controls.
+function open_recon_KeyPressFcn(hObject, eventdata, handles)
+% hObject    handle to open_recon (see GCBO)
+% eventdata  structure with the following fields (see MATLAB.UI.CONTROL.UICONTROL)
+%	Key: name of the key that was pressed, in lower case
+%	Character: character interpretation of the key(s) that was pressed
+%	Modifier: name(s) of the modifier key(s) (i.e., control, shift) pressed
+% handles    structure with handles and user data (see GUIDATA)
+return_press_do(hObject, eventdata, handles, handles.open_recon, @open_recon_Callback);
+
 
 %% allows for debugging with variables in scope
 % --- Executes on button press in debug.
@@ -606,51 +661,6 @@ function update_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
-
-% --- Executes on button press in open_recon.
-function open_recon_Callback(hObject, eventdata, handles)
-% hObject    handle to open_recon (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-[filename, pathname] = uigetfile;
-if isequal(filename, 0) % check whether user pressed cancel
-    return
-end
-
-% try to load reconstruction
-try
-    vars = load([pathname filename]);
-catch
-    uiwait(errordlg('Unable to find data'));
-    return;
-end
-
-% try to load reconstruction
-if isfield(vars, 'phan_true')
-    reconstruction = vars.phan_true;
-elseif isfield(vars, 'recon_final')
-    reconstruction = vars.recon_final;
-else
-    uiwait(errordlg('unable to load reconstructed matrix (must contain variable called phan_true or recon_final'));
-    return;
-end
-
-% display reconstruction 
-try
-    scale = 64/length(reconstruction)*8;
-    fig = vi(abs(reconstruction), 'aspect', [scale scale scale]);
-    
-    % change figure title
-    [~, figname] = fileparts(pathname(1:end-1)); % strips away filesep to treat folder as filename
-    set(fig, 'Name', [figname filesep filename]);
-catch M
-    errordlg(['unable to load reconstruction:' newline M.message]);
-    rethrow(M);
-end
-
-%% Toggles given switch
-function toggle_switch(swtch, ~, ~)
-set(swtch, 'Value', ~swtch.Value);
 
 % --- Executes during object creation, after setting all properties.
 function angle_CreateFcn(hObject, eventdata, handles)

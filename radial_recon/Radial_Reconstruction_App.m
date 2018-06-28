@@ -227,6 +227,7 @@ if ishandle(wbar)
 end
 figure(handles.Radial_Reconstruction_App);
 
+
 %% Pauses/unpauses batch run
 % --- Executes on button press in pause.
 function pause_Callback(hObject, eventdata, handles)
@@ -261,6 +262,7 @@ else
     drawnow;
     uicontrol(handles.close_all);
 end
+
 
 %% cancels a batch run
 % --- Executes on button press in cancel_batch.
@@ -301,7 +303,7 @@ switch answer
 end
 
 
-%% select folder to be used
+%% select data set to be used
 % --- Executes on button press in choose_file.
 function choose_file_Callback(hObject, eventdata, handles)
 % hObject    handle to choose_file (see GCBO)
@@ -315,6 +317,55 @@ function choose_file_Callback(hObject, eventdata, handles)
     set(handles.folder_display, 'String', folder);
     guidata(hObject, handles);   % Store handles
 
+    
+%% Toggles given switch
+function toggle_switch(swtch, ~, ~)
+set(swtch, 'Value', ~swtch.Value);
+
+
+%% opens previously performed reconstruction
+% --- Executes on button press in open_recon.
+function open_recon_Callback(hObject, eventdata, handles)
+% hObject    handle to open_recon (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+[filename, pathname] = uigetfile;
+if isequal(filename, 0) % check whether user pressed cancel
+    return
+end
+
+% try to load reconstruction
+try
+    vars = load([pathname filename]);
+catch
+    uiwait(errordlg('Unable to find data'));
+    return;
+end
+
+% try to load reconstruction
+if isfield(vars, 'phan_true')
+    reconstruction = vars.phan_true;
+elseif isfield(vars, 'recon_final')
+    reconstruction = vars.recon_final;
+else
+    uiwait(errordlg('unable to load reconstructed matrix (must contain variable called phan_true or recon_final'));
+    return;
+end
+
+% display reconstruction 
+try
+    % display figure
+    scale = 64/length(reconstruction)*8;
+    fig = vi(abs(reconstruction), 'aspect', [scale scale scale]);
+    
+    % change figure title
+    [~, figname] = fileparts(pathname(1:end-1)); % strips away filesep to treat folder as filename
+    set(fig, 'Name', [figname filesep filename]);
+catch M
+    errordlg(['unable to load reconstruction:' newline M.message]);
+    rethrow(M);
+end
+    
 
 %% For debugging purposes
 % --- Executes on button press in pushbutton5.
@@ -325,7 +376,7 @@ function pushbutton5_Callback(hObject, eventdata, handles)
 keyboard
 
 
-%% return key presses appropriate button
+%% return key presses appropriate button/moves focus
 % --- Executes on key press with focus on prepts and none of its controls.
 function prepts_KeyPressFcn(hObject, eventdata, handles)
 % hObject    handle to prepts (see GCBO)
@@ -447,54 +498,6 @@ function warn_overwrite_KeyPressFcn(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 return_press_do(hObject, eventdata, handles, handles.warn_overwrite, @toggle_switch);
 
-
-%% Toggles given switch
-function toggle_switch(swtch, ~, ~)
-set(swtch, 'Value', ~swtch.Value);
-
-
-%% opens previously performed reconstruction
-% --- Executes on button press in open_recon.
-function open_recon_Callback(hObject, eventdata, handles)
-% hObject    handle to open_recon (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-[filename, pathname] = uigetfile;
-if isequal(filename, 0) % check whether user pressed cancel
-    return
-end
-
-% try to load reconstruction
-try
-    vars = load([pathname filename]);
-catch
-    uiwait(errordlg('Unable to find data'));
-    return;
-end
-
-% try to load reconstruction
-if isfield(vars, 'phan_true')
-    reconstruction = vars.phan_true;
-elseif isfield(vars, 'recon_final')
-    reconstruction = vars.recon_final;
-else
-    uiwait(errordlg('unable to load reconstructed matrix (must contain variable called phan_true or recon_final'));
-    return;
-end
-
-% display reconstruction 
-try
-    % display figure
-    scale = 64/length(reconstruction)*8;
-    fig = vi(abs(reconstruction), 'aspect', [scale scale scale]);
-    
-    % change figure title
-    [~, figname] = fileparts(pathname(1:end-1)); % strips away filesep to treat folder as filename
-    set(fig, 'Name', [figname filesep filename]);
-catch M
-    errordlg(['unable to load reconstruction:' newline M.message]);
-    rethrow(M);
-end
 
 %% basically unused create functions
 % --- Executes during object creation, after setting all properties.

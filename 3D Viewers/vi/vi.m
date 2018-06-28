@@ -2264,7 +2264,8 @@ if length(ax) ~= 3 || any(isnan(ax))
 end
 
 % perform rotation
-f= msgbox(['WARNING: rotating distorts image slightly. It may also add or remove black border arounf image. Click Reset to restore to original' ...
+f= msgbox(['WARNING: rotating distorts image slightly. It may also add or remove black border around image. ' ...
+           'It will remove any completely black slices on the edges. Click Reset to restore to original' ...
            newline newline 'This window will close when rotation is complete.'], 'Rotating...');
 prev_img = getappdata(handles.figure_vi, 'imgData');
 try
