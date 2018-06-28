@@ -23,7 +23,7 @@ function varargout = phantom_app(varargin)
 
 % Edit the above text to modify the response to help phantom_app
 
-% Last Modified by GUIDE v2.5 28-Jun-2018 11:41:33
+% Last Modified by GUIDE v2.5 28-Jun-2018 14:45:31
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -281,7 +281,7 @@ function x_offset_KeyPressFcn(hObject, eventdata, handles)
 %	Character: character interpretation of the key(s) that was pressed
 %	Modifier: name(s) of the modifier key(s) (i.e., control, shift) pressed
 % handles    structure with handles and user data (see GUIDATA)
-return_press_do(hObject, eventdata, handles, handles.add, @add_Callback);
+return_press_do(hObject, eventdata, handles, handles.y_offset, @NOP);
 
 % --- Executes on key press with focus on y_offset and none of its controls.
 function y_offset_KeyPressFcn(hObject, eventdata, handles)
@@ -291,7 +291,7 @@ function y_offset_KeyPressFcn(hObject, eventdata, handles)
 %	Character: character interpretation of the key(s) that was pressed
 %	Modifier: name(s) of the modifier key(s) (i.e., control, shift) pressed
 % handles    structure with handles and user data (see GUIDATA)
-return_press_do(hObject, eventdata, handles, handles.add, @add_Callback);
+return_press_do(hObject, eventdata, handles, handles.z_offset, @NOP);
 
 % --- Executes on key press with focus on z_offset and none of its controls.
 function z_offset_KeyPressFcn(hObject, eventdata, handles)
@@ -301,7 +301,7 @@ function z_offset_KeyPressFcn(hObject, eventdata, handles)
 %	Character: character interpretation of the key(s) that was pressed
 %	Modifier: name(s) of the modifier key(s) (i.e., control, shift) pressed
 % handles    structure with handles and user data (see GUIDATA)
-return_press_do(hObject, eventdata, handles, handles.add, @add_Callback);
+return_press_do(hObject, eventdata, handles, handles.x_extent, @NOP);
 
 % --- Executes on key press with focus on x_extent and none of its controls.
 function x_extent_KeyPressFcn(hObject, eventdata, handles)
@@ -311,7 +311,7 @@ function x_extent_KeyPressFcn(hObject, eventdata, handles)
 %	Character: character interpretation of the key(s) that was pressed
 %	Modifier: name(s) of the modifier key(s) (i.e., control, shift) pressed
 % handles    structure with handles and user data (see GUIDATA)
-return_press_do(hObject, eventdata, handles, handles.add, @add_Callback);
+return_press_do(hObject, eventdata, handles, handles.y_extent, @NOP);
 
 % --- Executes on key press with focus on y_extent and none of its controls.
 function y_extent_KeyPressFcn(hObject, eventdata, handles)
@@ -321,7 +321,7 @@ function y_extent_KeyPressFcn(hObject, eventdata, handles)
 %	Character: character interpretation of the key(s) that was pressed
 %	Modifier: name(s) of the modifier key(s) (i.e., control, shift) pressed
 % handles    structure with handles and user data (see GUIDATA)
-return_press_do(hObject, eventdata, handles, handles.add, @add_Callback);
+return_press_do(hObject, eventdata, handles, handles.z_extent, @NOP);
 
 % --- Executes on key press with focus on z_extent and none of its controls.
 function z_extent_KeyPressFcn(hObject, eventdata, handles)
@@ -331,7 +331,47 @@ function z_extent_KeyPressFcn(hObject, eventdata, handles)
 %	Character: character interpretation of the key(s) that was pressed
 %	Modifier: name(s) of the modifier key(s) (i.e., control, shift) pressed
 % handles    structure with handles and user data (see GUIDATA)
-return_press_do(hObject, eventdata, handles, handles.add, @add_Callback);
+return_press_do(hObject, eventdata, handles, handles.xDir, @NOP);
+
+% --- Executes on key press with focus on xDir and none of its controls.
+function xDir_KeyPressFcn(hObject, eventdata, handles)
+% hObject    handle to xDir (see GCBO)
+% eventdata  structure with the following fields (see MATLAB.UI.CONTROL.UICONTROL)
+%	Key: name of the key that was pressed, in lower case
+%	Character: character interpretation of the key(s) that was pressed
+%	Modifier: name(s) of the modifier key(s) (i.e., control, shift) pressed
+% handles    structure with handles and user data (see GUIDATA)
+return_press_do(hObject, eventdata, handles, handles.yDir, @NOP);
+
+% --- Executes on key press with focus on yDir and none of its controls.
+function yDir_KeyPressFcn(hObject, eventdata, handles)
+% hObject    handle to yDir (see GCBO)
+% eventdata  structure with the following fields (see MATLAB.UI.CONTROL.UICONTROL)
+%	Key: name of the key that was pressed, in lower case
+%	Character: character interpretation of the key(s) that was pressed
+%	Modifier: name(s) of the modifier key(s) (i.e., control, shift) pressed
+% handles    structure with handles and user data (see GUIDATA)
+return_press_do(hObject, eventdata, handles, handles.zDir, @NOP);
+
+% --- Executes on key press with focus on zDir and none of its controls.
+function zDir_KeyPressFcn(hObject, eventdata, handles)
+% hObject    handle to zDir (see GCBO)
+% eventdata  structure with the following fields (see MATLAB.UI.CONTROL.UICONTROL)
+%	Key: name of the key that was pressed, in lower case
+%	Character: character interpretation of the key(s) that was pressed
+%	Modifier: name(s) of the modifier key(s) (i.e., control, shift) pressed
+% handles    structure with handles and user data (see GUIDATA)
+return_press_do(hObject, eventdata, handles, handles.angle, @NOP);
+
+% --- Executes on key press with focus on angle and none of its controls.
+function angle_KeyPressFcn(hObject, eventdata, handles)
+% hObject    handle to angle (see GCBO)
+% eventdata  structure with the following fields (see MATLAB.UI.CONTROL.UICONTROL)
+%	Key: name of the key that was pressed, in lower case
+%	Character: character interpretation of the key(s) that was pressed
+%	Modifier: name(s) of the modifier key(s) (i.e., control, shift) pressed
+% handles    structure with handles and user data (see GUIDATA)
+return_press_do(hObject, eventdata, handles, handles.intensity, @NOP);
 
 % --- Executes on key press with focus on intensity and none of its controls.
 function intensity_KeyPressFcn(hObject, eventdata, handles)
@@ -341,7 +381,7 @@ function intensity_KeyPressFcn(hObject, eventdata, handles)
 %	Character: character interpretation of the key(s) that was pressed
 %	Modifier: name(s) of the modifier key(s) (i.e., control, shift) pressed
 % handles    structure with handles and user data (see GUIDATA)
-return_press_do(hObject, eventdata, handles, handles.add, @add_Callback);
+return_press_do(hObject, eventdata, handles, handles.add, @NOP);
 
 % --- Executes on key press with focus on add and none of its controls.
 function add_KeyPressFcn(hObject, eventdata, handles)
@@ -362,7 +402,7 @@ function phan_list_KeyPressFcn(hObject, eventdata, handles)
 %	Character: character interpretation of the key(s) that was pressed
 %	Modifier: name(s) of the modifier key(s) (i.e., control, shift) pressed
 % handles    structure with handles and user data (see GUIDATA)
-return_press_do(hObject, eventdata, handles, handles.remove, @remove_Callback);
+return_press_do(hObject, eventdata, handles, handles.remove, @NOP);
 
 % --- Executes on key press with focus on remove and none of its controls.
 function remove_KeyPressFcn(hObject, eventdata, handles)
@@ -422,8 +462,7 @@ function disp_phan_KeyPressFcn(hObject, eventdata, handles)
 %	Character: character interpretation of the key(s) that was pressed
 %	Modifier: name(s) of the modifier key(s) (i.e., control, shift) pressed
 % handles    structure with handles and user data (see GUIDATA)
-set(handles.disp_phan, 'Value', ~handles.disp_phan.Value);
-return_press_do(hObject, eventdata, handles, handles.disp_phan, @disp_phan_Callback);
+return_press_do(hObject, eventdata, handles, handles.disp_phan, @toggle_switch);
 
 
 %% allows for debugging with variables in scope
@@ -568,16 +607,6 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
     set(hObject,'BackgroundColor','white');
 end
 
-%% does nothing, but passed into return_press_do
-% --- Executes on button press in disp_phan.
-function disp_phan_Callback(hObject, eventdata, handles)
-% hObject    handle to disp_phan (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hint: get(hObject,'Value') returns toggle state of disp_phan
-
-
 % --- Executes on button press in open_recon.
 function open_recon_Callback(hObject, eventdata, handles)
 % hObject    handle to open_recon (see GCBO)
@@ -618,6 +647,10 @@ catch M
     errordlg(['unable to load reconstruction:' newline M.message]);
     rethrow(M);
 end
+
+%% Toggles given switch
+function toggle_switch(swtch, ~, ~)
+set(swtch, 'Value', ~swtch.Value);
 
 % --- Executes during object creation, after setting all properties.
 function angle_CreateFcn(hObject, eventdata, handles)
