@@ -47,7 +47,7 @@ grad_amp_small = sqrt(x_grad(end)^2+z_grad(end)^2+y_grad(end)^2);
         pathname = [fileparts(which('radial_recon_rs2d_20180314_two_grads')) filesep 'senscor' filesep];
         filename = sprintf('senscor_%dpts_%dspokes_at_%f_%dspokes_at_%f_matsize_%d.mat', nsample, nspokes1,grad_amp_big,nspokes2,grad_amp_small,recon_matrix_size);
         %% UNCOMMENT NEXT LINE WHEN ACTUALLY IN USE: 
-        % addpath senscor;
+        addpath senscor;
         if exist(filename, 'file') == 2
             load([pathname filename]);
         else
