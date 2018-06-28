@@ -236,6 +236,7 @@ try
     pseudo_data_phantom(phan_true, folder, handles.recon_matrix_size, handles);
     % display original phantom
     if get(handles.disp_phan, 'Value') 
+        add_string_gui(handles, 'loading phantom ...');
         fig = vi(abs(phan_true), 'aspect', [5 5 5]);
         
          % change figure title
