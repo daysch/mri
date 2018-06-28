@@ -130,6 +130,16 @@ catch M
     rethrow(M);
 end
 
+% replace NaNs with 0s
+new_phan(isnan(new_phan)) = 0;
+
+% shape cannot be all 0s
+if ~any(new_phan(:))
+    uiwait(errordlg('shape completely out of bounds of matrix'));
+    unpause_gui;
+    error('shape completely out of bounds of matrix');
+end
+
 % save phantom matrix
 old_list = get(handles.phan_list, 'String');
 addition = string(sprintf('%s_OO=[%d %d %d]_E=[%d %d %d]_D=[%d %d %d]_R=%.2f_I=%d', phan_type_val, ...

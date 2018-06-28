@@ -39,4 +39,7 @@ if isinf(rotAng)
 elseif any(phan_extent_val <= 0)
     uiwait(errordlg('extents must be positive'));
     error('known error');
+elseif isinf(intensity_val) || isnan(intensity_val) || intensity_val == 0
+    uiwait(errordlg('extents must finite nonzero number'));
+    error('known error');
 end
