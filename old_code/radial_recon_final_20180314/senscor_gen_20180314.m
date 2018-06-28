@@ -36,7 +36,7 @@ grad_amp_small = sqrt(x_grad(end)^2+z_grad(end)^2+y_grad(end)^2);
         % saved previously. If so, that table is used so that time is not
         % wasted.
         
-        filename = sprintf('senscor_%dpts_%dspokes_at_%f_%dspokes_at_%f.mat', nsample, nspokes1,grad_amp_big,nspokes2,grad_amp_small);
+        filename = sprintf('senscor_%dpts_%dspokes_at_%f_%dspokes_at_%f_size_%d.mat', nsample, nspokes1,grad_amp_big,nspokes2,grad_amp_small, recon_matrix_size);
         if exist(filename, 'file') == 2
             load([pathname filename]);
         else
