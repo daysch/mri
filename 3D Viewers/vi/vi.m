@@ -2243,7 +2243,7 @@ function rotate_img_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % get parameters for rotation
-prompt = {'Angle of rotation (radians):','axis of rotation (format: x y z)'};
+prompt = {'Angle of rotation (degrees):','axis of rotation (format: x y z)'};
 title = 'Rotate Image';
 answer = inputdlg(prompt,title);
 
@@ -2251,7 +2251,7 @@ answer = inputdlg(prompt,title);
 if isempty(answer)
     return;
 end
-angle = str2num(answer{1});
+angle = deg2rad(str2double(answer{1}));
 if length(angle) ~= 1 || isnan(angle) || isinf(angle)
     errordlg('please input valid angle');
     return;

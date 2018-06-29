@@ -7,7 +7,7 @@ phan_offset_val = [str2double(get(handles.x_offset, 'String')) ...
                    str2double(get(handles.y_offset, 'String')) ...
                    str2double(get(handles.z_offset, 'String'))];
 intensity_val = str2double(get(handles.intensity, 'String'));
-rotAng = str2num(get(handles.angle, 'String'));
+rotAng = deg2rad(str2double(get(handles.angle, 'String')));
 rotDir = [str2double(get(handles.xDir, 'String')) ...
           str2double(get(handles.yDir, 'String')) ...
           str2double(get(handles.zDir, 'String'))];
@@ -16,7 +16,7 @@ rotDir = [str2double(get(handles.xDir, 'String')) ...
 if any(isnan(phan_extent_val)) || any(isnan(phan_offset_val)) || ...
        isnan(intensity_val) || any(isnan(rotDir)) || length(rotAng) ~= 1 || ...
        isnan(rotAng)
-        errordlg('Please fill out parameters');
+        uiwait(errordlg('Please fill out parameters'));
         error('known error');
 end
 
@@ -40,6 +40,6 @@ elseif any(phan_extent_val <= 0)
     uiwait(errordlg('extents must be positive'));
     error('known error');
 elseif isinf(intensity_val) || isnan(intensity_val) || intensity_val == 0
-    uiwait(errordlg('extents must finite nonzero number'));
+    uiwait(errordlg('intensity must be finite nonzero number'));
     error('known error');
 end
