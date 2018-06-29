@@ -5,7 +5,8 @@
 % Department of Radiation Oncology
 % Last edited: 08/19/2014
 % Added 6/2018 (David Schoenberg):
-% - Colorbar defaults to b+w - lock aspect ratio checkbox
+% - Colorbar defaults to b+w - lock aspect ratio checkbox - rotate3d
+% - fixed pixel value showing - other small things
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 function varargout = vi(varargin)
