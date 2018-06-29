@@ -1,6 +1,9 @@
-% prints a given string to the gui
 function add_string_gui(handles, addition)
-    old_update = get(handles.update, 'String');
-    set(handles.update, 'String', [old_update; string(addition)]);
-    drawnow;
+% prints a given string to the gui update box
+%
+% handles: struct containing a figure handle to a textbox called 'update'
+% addition: string to be added to update textbox
+old_update = get(handles.update, 'String');
+set(handles.update, 'String', [old_update; string(addition)]);
+drawnow;
 end

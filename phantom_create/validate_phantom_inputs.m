@@ -1,4 +1,5 @@
-%% validates inputs. throws error 'known error' if input is bad, to be picked up function that calls this script
+% validates inputs. throws error 'known error' if input is bad, to be picked up function that calls this script
+
 % collect values
 phan_extent_val = [str2double(get(handles.x_extent, 'String')) ...
                    str2double(get(handles.y_extent, 'String')) ...

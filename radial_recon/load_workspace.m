@@ -5,5 +5,5 @@ if exist('workspace', 'file')
         assignin('base', v{1}, myvars.(v{1}));
     end
 else
-    msgbox('Image reconstruction is complete, but calculations could not be saved for future use. ','Unable to load workspace data.')
+    msgbox('Image reconstruction is complete, but calculations could not be saved for future use. ','Unable to save workspace data.')
 end

@@ -6,4 +6,3 @@ fig = vi(abs(recon_final), 'aspect', [scale scale scale]);
 
 % change figure title
 set(fig, 'Name', title);
-%figure; imshow3Dfull(abs(recon_final));

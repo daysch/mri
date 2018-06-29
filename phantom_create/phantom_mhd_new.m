@@ -3,7 +3,7 @@ function phan = phantom_mhd_new(matrix_size, type, phantom_extent, offcenter, in
 % are 'rectangular', and 'ellipsoidal' Extent is specified in number of points in
 % each direction [x y z]. offcenter is an array of three points [x y z] 
 % denoting how far from the center the object resides. Intensity determines
-% the color of the grayscale image. rotAnd and rotDir determine the angle
+% the color of the grayscale image. rotAng and rotDir determine the angle
 % and direction for the phantom to be rotated.
 
 % max dimension of phantom is diagonal of box
