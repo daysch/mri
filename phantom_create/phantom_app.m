@@ -143,7 +143,7 @@ end
 % save phantom matrix
 old_list = get(handles.phan_list, 'String');
 addition = string(sprintf('%s_OO=[%d %d %d]_E=[%d %d %d]_D=[%d %d %d]_R=%.2f_I=%d', phan_type_val, ...
-                          phan_offset_val, phan_extent_val, rotDir, rotAng, intensity_val));
+                          phan_offset_val, phan_extent_val, rotDir, rad2deg(rotAng), intensity_val));
 add_string_gui(handles, [string('added shape:'); addition]);
                       
 if isequal(old_list(1), ' ')
@@ -255,7 +255,7 @@ if get(handles.disp_phan, 'Value')
     try
         % display original phantom
         add_string_gui(handles, 'loading phantom ...');
-        scale = 64/handles.recon_matrix_size*8;
+        scale = 64/handles.recon_matrix_size*6.8;
         fig = vi(abs(phan_true), 'aspect', [scale scale scale]);
 
         % change figure title
@@ -301,7 +301,7 @@ end
 
 % display reconstruction 
 try
-    scale = 64/length(reconstruction)*8;
+    scale = 64/length(reconstruction)*6.8;
     fig = vi(abs(reconstruction), 'aspect', [scale scale scale]);
     
     % change figure title

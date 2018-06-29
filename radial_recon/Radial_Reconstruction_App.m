@@ -355,7 +355,7 @@ end
 % display reconstruction 
 try
     % display figure
-    scale = 64/length(reconstruction)*8;
+    scale = 64/length(reconstruction)*6.8;
     fig = vi(abs(reconstruction), 'aspect', [scale scale scale]);
     
     % change figure title
