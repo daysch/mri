@@ -92,6 +92,7 @@ function phan = transformation(phan, rotAng, rotDir, offcenter, matrix_size)
     phan = rotImg3(phan, rotAng, rotDir([2 1 3]), 'linear', false, false);
     phan = shift(phan, offcenter);
     phan = crop(phan, matrix_size);
+    phan(phan == 0) = 2.2251e-200; %arbitrary number to avoid clipping when rotating
 end
 
 % shifts matrix by offset, replaces ends with zeros to undo circular aspect
