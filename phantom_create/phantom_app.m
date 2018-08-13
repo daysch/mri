@@ -145,7 +145,7 @@ old_list = get(handles.phan_list, 'String');
 addition = string(sprintf('%s_OO=[%d %d %d]_E=[%d %d %d]_D=[%d %d %d]_R=%.2f_I=%d', phan_type_val, ...
                           phan_offset_val, phan_extent_val, rotDir, rad2deg(rotAng), intensity_val));
 add_string_gui(handles, [string('added shape:'); addition]);
-                      
+
 if isequal(old_list(1), ' ')
     set(handles.phan_list, 'String', addition);
     handles.real_phans = {new_phan};
@@ -153,6 +153,24 @@ else
     set(handles.phan_list, 'String', [old_list;addition]);
     handles.real_phans = [handles.real_phans; new_phan];
 end
+
+% display phantom so far
+try
+    add_string_gui(handles, string('updating phantom viewer...'));
+    if isfield(handles, 'phan_viewer') && ishandle(handles.phan_viewer)
+        close(handles.phan_viewer);
+    end
+
+    phan_true=cat(4, handles.real_phans{:});
+    phan_true = sum(phan_true, 4);
+    scale = 64/handles.recon_matrix_size*6.8;
+    handles.phan_viewer = vi(phan_true, 'aspect', [scale scale scale]);
+catch M
+    uiwait(errordlg('unable to display phantom'));
+    unpause_gui;
+    rethrow(M);
+end
+
 guidata(hObject, handles);
 
 % clean up

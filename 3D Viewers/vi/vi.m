@@ -155,13 +155,13 @@ elseif 3 == numDims % 3D images need multiple views, rotation, etc.
 end
 
 setappdata(handles.figure_vi, 'imgData', img);
-setappdata(handles.figure_vi, 'original_imgData', img); % added - David
+setappdata(handles.figure_vi, 'original_imgData', img);
 setappdata(handles.figure_vi, 'imgSize', imgSize);
 setappdata(handles.figure_vi, 'numDims', numDims);
 
 cb = colorbar('peer', handles.axes_colorBar, 'location', 'west');
 setappdata(handles.figure_vi, 'colorBar', cb);
-colormap('gray') % added by David
+colormap('gray')
 
 % Get number string format.
 if isinteger(img) || islogical(img)
