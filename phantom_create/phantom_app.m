@@ -155,21 +155,7 @@ else
 end
 
 % display phantom so far
-try
-    add_string_gui(handles, string('updating phantom viewer...'));
-    if isfield(handles, 'phan_viewer') && ishandle(handles.phan_viewer)
-        close(handles.phan_viewer);
-    end
-
-    phan_true=cat(4, handles.real_phans{:});
-    phan_true = sum(phan_true, 4);
-    scale = 64/handles.recon_matrix_size*6.8;
-    handles.phan_viewer = vi(phan_true, 'aspect', [scale scale scale]);
-catch M
-    uiwait(errordlg('unable to display phantom'));
-    unpause_gui;
-    rethrow(M);
-end
+disp_cur_phan;
 
 guidata(hObject, handles);
 
@@ -205,6 +191,8 @@ end
 % gui update box
 add_string_gui(handles, [string('removed shape:'); old_list(index, :)]);
 
+disp_cur_phan;
+
 guidata(hObject, handles);
 
 
@@ -223,6 +211,7 @@ switch answer
         pause_gui;
         unpause_gui;
         add_string_gui(handles, [newline newline newline 'cleared shapes' newline newline newline]);
+        disp_cur_phan;
 end
 
 
