@@ -5,6 +5,8 @@ function phan = phantom_mhd_new(matrix_size, type, phantom_extent, offcenter, in
 % denoting how far from the center the object resides. Intensity determines
 % the color of the grayscale image. rotAng and rotDir determine the angle
 % and direction for the phantom to be rotated.
+% adds arbitrary number (2.2251e-200) to declare black spaces as relavent
+% data
 
 % max dimension of phantom is diagonal of box
 diag = ceil(sqrt(matrix_size^2*3));
@@ -92,7 +94,7 @@ function phan = transformation(phan, rotAng, rotDir, offcenter, matrix_size)
     phan = rotImg3(phan, rotAng, rotDir([2 1 3]), 'linear', false, false);
     phan = shift(phan, offcenter);
     phan = crop(phan, matrix_size);
-    phan(phan == 0) = 2.2251e-200; %arbitrary number to avoid clipping when rotating
+    phan = phan + 2.2251e-200; % arbitrary number to avoid clipping when rotating
 end
 
 % shifts matrix by offset, replaces ends with zeros to undo circular aspect

@@ -1,4 +1,4 @@
-function [ im ] = rotImg3( img, teta, ax, method, pad, shrink )
+function [ im ] = rotImg3( img, teta, ax, method, pad, shrink)
 %rotImg3 rotates 3 image
 % --- Syntax
 %   [ im ] = rotImg3( img, teta, ax, method )
@@ -6,7 +6,10 @@ function [ im ] = rotImg3( img, teta, ax, method, pad, shrink )
 % axis of rotation for exmple [1 0 0], method can be nearest for nearest
 % neighbor of linear interpolation. pad =(true|false) is wheter or not to pad the object
 % with nan or to crop the image after the rotation and leave it same size
-%
+% shrink determines whether to crop matrix to cube of smallest size while
+% by eliminating zeros. min_sz determines smallest size of matrix to
+% return. Will pad both sides of each dimension with zeros to make this size.
+% 
 % example use for rotating a cylinder:
 % nS = 30; % cylynder size
 % cylBlock = repmat([1 zeros(1,nS-2) 1], nS,1);
@@ -34,6 +37,9 @@ if ~exist('shrink', 'var')
 end
 
 sz = size(img);
+if ~all(sz == sz(1))
+    error('rotation requires cubic matrix'); % requiring cubic matrix for simplicity
+end
 ratM = rotationmat3D(teta, ax);
 
 % padding image
@@ -69,11 +75,13 @@ zout = XYZt(:,3);
 imagerotF = interp3(imagepad, yout, xout, zout, method);
 im = reshape(imagerotF, size(imagepad));
 
-%shrink image to use minimal size
+% shrink image to use minimal size, while maintaining squareness
 if shrink
     idx=find(abs(im)>0);
     [mx, my, mz] = ind2sub(size(im), idx);
-    im = im(min(mx):max(mx), min(my):max(my), min(mz):max(mz));
+    min_all = min([mx my mz]);
+    max_all = max([mx my mz]);
+    im = im(min_all:max_all, min_all:max_all, min_all:max_all);
 end
 
 end
