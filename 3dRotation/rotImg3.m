@@ -2,7 +2,7 @@ function [ im ] = rotImg3( img, teta, ax, method, pad, shrink)
 %rotImg3 rotates 3 image
 % --- Syntax
 %   [ im ] = rotImg3( img, teta, ax, method )
-% img is the 3D image, teta is the angle in radians, ax is the 
+% img is the 3D image (must be cubic), teta is the angle in radians, ax is the 
 % axis of rotation for exmple [1 0 0], method can be nearest for nearest
 % neighbor of linear interpolation. pad =(true|false) is wheter or not to pad the object
 % with nan or to crop the image after the rotation and leave it same size
