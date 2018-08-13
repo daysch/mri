@@ -23,7 +23,7 @@ function varargout = phantom_app(varargin)
 
 % Edit the above text to modify the response to help phantom_app
 
-% Last Modified by GUIDE v2.5 28-Jun-2018 15:22:16
+% Last Modified by GUIDE v2.5 13-Aug-2018 10:52:01
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -155,7 +155,9 @@ else
 end
 
 % display phantom so far
-disp_cur_phan;
+if handles.preview.Value
+    disp_cur_phan;
+end
 
 guidata(hObject, handles);
 
@@ -191,7 +193,10 @@ end
 % gui update box
 add_string_gui(handles, [string('removed shape:'); old_list(index, :)]);
 
-disp_cur_phan;
+% display phantom so far
+if handles.preview.Value
+    disp_cur_phan;
+end
 
 guidata(hObject, handles);
 
@@ -211,7 +216,10 @@ switch answer
         pause_gui;
         unpause_gui;
         add_string_gui(handles, [newline newline newline 'cleared shapes' newline newline newline]);
-        disp_cur_phan;
+        % display phantom so far
+        if handles.preview.Value
+            disp_cur_phan;
+        end
 end
 
 
@@ -546,6 +554,16 @@ function open_recon_KeyPressFcn(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 return_press_do(hObject, eventdata, handles, handles.open_recon, @open_recon_Callback);
 
+% --- Executes on key press with focus on preview and none of its controls.
+function preview_KeyPressFcn(hObject, eventdata, handles)
+% hObject    handle to preview (see GCBO)
+% eventdata  structure with the following fields (see MATLAB.UI.CONTROL.UICONTROL)
+%	Key: name of the key that was pressed, in lower case
+%	Character: character interpretation of the key(s) that was pressed
+%	Modifier: name(s) of the modifier key(s) (i.e., control, shift) pressed
+% handles    structure with handles and user data (see GUIDATA)
+return_press_do(hObject, eventdata, handles, handles.preview, @toggle_switch);
+
 
 %% allows for debugging with variables in scope
 % --- Executes on button press in debug.
@@ -736,3 +754,12 @@ function xDir_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
+
+
+% --- Executes on button press in preview.
+function preview_Callback(hObject, eventdata, handles)
+% hObject    handle to preview (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of preview
