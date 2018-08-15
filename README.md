@@ -1,5 +1,6 @@
 # mri
 See User Manual for extended details and instructions
+
 Implements 2 MATLAB GUIs:
 
 radial_recon: performs a special form of MRI image reconstruction
